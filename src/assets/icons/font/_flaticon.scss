@@ -1,0 +1,140 @@
+    /*
+    Flaticon icon font: Flaticon
+    Creation date: 21/08/2020 09:36
+    */
+
+    @font-face {
+  font-family: "Flaticon";
+  src: url("./Flaticon.eot");
+  src: url("./Flaticon.eot?#iefix") format("embedded-opentype"),
+       url("./Flaticon.woff2") format("woff2"),
+       url("./Flaticon.woff") format("woff"),
+       url("./Flaticon.ttf") format("truetype"),
+       url("./Flaticon.svg#Flaticon") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: "Flaticon";
+    src: url("./Flaticon.svg#Flaticon") format("svg");
+  }
+}
+
+    .fi:before{
+        display: inline-block;
+  font-family: "Flaticon";
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  line-height: 1;
+  text-decoration: inherit;
+  text-rendering: optimizeLegibility;
+  text-transform: none;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+    }
+
+    .flaticon-up-arrow:before { content: "\f100"; }
+.flaticon-down-arrow:before { content: "\f101"; }
+.flaticon-vertical-dots:before { content: "\f102"; }
+.flaticon-left-arrow:before { content: "\f103"; }
+.flaticon-right-arrow:before { content: "\f104"; }
+.flaticon-play-and-pause-button:before { content: "\f105"; }
+.flaticon-previous-track-button:before { content: "\f106"; }
+.flaticon-cancel:before { content: "\f107"; }
+.flaticon-login:before { content: "\f108"; }
+.flaticon-menu:before { content: "\f109"; }
+.flaticon-sound:before { content: "\f10a"; }
+.flaticon-speaker:before { content: "\f10b"; }
+.flaticon-mute:before { content: "\f10c"; }
+.flaticon-counterclockwise:before { content: "\f10d"; }
+.flaticon-trash:before { content: "\f10e"; }
+.flaticon-up:before { content: "\f10f"; }
+.flaticon-down-arrow-1:before { content: "\f110"; }
+.flaticon-double-arrow-cross-of-shuffle:before { content: "\f111"; }
+.flaticon-right-arrow-1:before { content: "\f112"; }
+.flaticon-left-arrow-1:before { content: "\f113"; }
+.flaticon-copy:before { content: "\f114"; }
+.flaticon-search:before { content: "\f115"; }
+.flaticon-home:before { content: "\f116"; }
+.flaticon-gymnast:before { content: "\f117"; }
+.flaticon-settings:before { content: "\f118"; }
+.flaticon-user:before { content: "\f119"; }
+.flaticon-logout:before { content: "\f11a"; }
+.flaticon-bell:before { content: "\f11b"; }
+.flaticon-continuous:before { content: "\f11c"; }
+.flaticon-tick:before { content: "\f11d"; }
+.flaticon-right-arrow-2:before { content: "\f11e"; }
+.flaticon-left-arrow-2:before { content: "\f11f"; }
+.flaticon-pencil:before { content: "\f120"; }
+.flaticon-add-button:before { content: "\f121"; }
+.flaticon-play:before { content: "\f122"; }
+.flaticon-stop:before { content: "\f123"; }
+.flaticon-pause:before { content: "\f124"; }
+.flaticon-movie-player-play-button:before { content: "\f125"; }
+.flaticon-pause-button:before { content: "\f126"; }
+.flaticon-stop-1:before { content: "\f127"; }
+.flaticon-minus:before { content: "\f128"; }
+.flaticon-plus:before { content: "\f129"; }
+.flaticon-minus-1:before { content: "\f12a"; }
+.flaticon-instagram:before { content: "\f12b"; }
+.flaticon-telephone:before { content: "\f12c"; }
+.flaticon-placeholder:before { content: "\f12d"; }
+.flaticon-careless:before { content: "\f12e"; }
+.flaticon-speech-bubble:before { content: "\f12f"; }
+.flaticon-linkedin:before { content: "\f130"; }
+.flaticon-arrows:before { content: "\f131"; }
+    
+    $font-Flaticon-up-arrow: "\f100";
+    $font-Flaticon-down-arrow: "\f101";
+    $font-Flaticon-vertical-dots: "\f102";
+    $font-Flaticon-left-arrow: "\f103";
+    $font-Flaticon-right-arrow: "\f104";
+    $font-Flaticon-play-and-pause-button: "\f105";
+    $font-Flaticon-previous-track-button: "\f106";
+    $font-Flaticon-cancel: "\f107";
+    $font-Flaticon-login: "\f108";
+    $font-Flaticon-menu: "\f109";
+    $font-Flaticon-sound: "\f10a";
+    $font-Flaticon-speaker: "\f10b";
+    $font-Flaticon-mute: "\f10c";
+    $font-Flaticon-counterclockwise: "\f10d";
+    $font-Flaticon-trash: "\f10e";
+    $font-Flaticon-up: "\f10f";
+    $font-Flaticon-down-arrow-1: "\f110";
+    $font-Flaticon-double-arrow-cross-of-shuffle: "\f111";
+    $font-Flaticon-right-arrow-1: "\f112";
+    $font-Flaticon-left-arrow-1: "\f113";
+    $font-Flaticon-copy: "\f114";
+    $font-Flaticon-search: "\f115";
+    $font-Flaticon-home: "\f116";
+    $font-Flaticon-gymnast: "\f117";
+    $font-Flaticon-settings: "\f118";
+    $font-Flaticon-user: "\f119";
+    $font-Flaticon-logout: "\f11a";
+    $font-Flaticon-bell: "\f11b";
+    $font-Flaticon-continuous: "\f11c";
+    $font-Flaticon-tick: "\f11d";
+    $font-Flaticon-right-arrow-2: "\f11e";
+    $font-Flaticon-left-arrow-2: "\f11f";
+    $font-Flaticon-pencil: "\f120";
+    $font-Flaticon-add-button: "\f121";
+    $font-Flaticon-play: "\f122";
+    $font-Flaticon-stop: "\f123";
+    $font-Flaticon-pause: "\f124";
+    $font-Flaticon-movie-player-play-button: "\f125";
+    $font-Flaticon-pause-button: "\f126";
+    $font-Flaticon-stop-1: "\f127";
+    $font-Flaticon-minus: "\f128";
+    $font-Flaticon-plus: "\f129";
+    $font-Flaticon-minus-1: "\f12a";
+    $font-Flaticon-instagram: "\f12b";
+    $font-Flaticon-telephone: "\f12c";
+    $font-Flaticon-placeholder: "\f12d";
+    $font-Flaticon-careless: "\f12e";
+    $font-Flaticon-speech-bubble: "\f12f";
+    $font-Flaticon-linkedin: "\f130";
+    $font-Flaticon-arrows: "\f131";

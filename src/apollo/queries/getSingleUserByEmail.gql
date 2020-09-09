@@ -1,0 +1,6 @@
+query($email: String!) {
+  users(where: { email: $email }) {
+    id
+    admin
+  }
+}

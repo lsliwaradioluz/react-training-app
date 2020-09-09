@@ -1,0 +1,7 @@
+mutation($input: updateFamilyInput) {
+  updateFamily(input: $input) {
+    id
+    name
+    createdAt
+  }
+}

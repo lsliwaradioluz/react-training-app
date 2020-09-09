@@ -1,0 +1,40 @@
+mutation($input: createWorkoutInput) {
+  createWorkout(input: $input) {
+    id
+    scheduled
+    ready
+    sticky
+    name
+    createdAt
+    sections {
+      id
+      name
+      complexes {
+        name 
+        id
+        units {
+          id
+          sets
+          reps
+          time
+          distance
+          rest
+          remarks
+          feedback
+          exercise {
+            id
+            name
+            image {
+              id
+              url
+            }
+            family {
+              id
+              name
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,50 @@
+query($id: ID, $email: String) {
+  user(id: $id, email: $email) {
+    id
+    username
+    fullname
+    admin
+    image {
+      id
+      url
+    }
+    workouts {
+      id
+      scheduled
+      ready
+      sticky
+      name
+      createdAt
+      sections {
+        id
+        name
+        complexes {
+          id
+          name 
+          units {
+            id
+            sets
+            reps
+            time
+            distance 
+            rest
+            remarks
+            feedback
+            exercise {
+              id
+              name
+              image {
+                id
+                url
+              }
+              family {
+                id
+                name
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+mutation($input: updateExerciseInput) {
+  updateExercise(input: $input) {
+    id
+    name
+    image {
+      id
+      url
+    }
+  }
+}

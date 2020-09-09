@@ -1,0 +1,19 @@
+query getAllFamilies($userId: ID) {
+  families(userId: $userId) {
+    id
+    name
+    createdAt
+    exercises {
+      id
+      name
+      image {
+        id
+        url
+      }
+      family {
+        id
+        name
+      }
+    }
+  }
+}

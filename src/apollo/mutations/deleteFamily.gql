@@ -1,0 +1,7 @@
+mutation($id: ID!) {
+  deleteFamily(id: $id) {
+    id
+    name
+    createdAt
+  }
+}

@@ -1,0 +1,14 @@
+mutation($input: createUserInput) {
+  createUser(input: $input) {
+    user {
+      id
+      username
+      fullname
+      admin
+      image {
+        id
+        url
+      }
+    }
+  }
+}

@@ -1,0 +1,32 @@
+mutation($input: updateWorkoutInput) {
+  updateWorkout(input: $input) {
+    id
+    scheduled
+    ready
+    sticky
+    name
+    createdAt
+    sections {
+        id
+        name
+        complexes {
+          name 
+          id
+          units {
+            id
+            sets
+            reps
+            time
+            distance
+            rest
+            remarks
+            feedback
+            exercise {
+              id
+              name
+            }
+          }
+        }
+      }
+  }
+}

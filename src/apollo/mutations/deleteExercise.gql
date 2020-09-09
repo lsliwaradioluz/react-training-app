@@ -1,0 +1,11 @@
+mutation($id: ID!) {
+  deleteExercise(id: $id) {
+    id
+    name
+    image {
+      id
+      url
+      public_id
+    }
+  }
+}

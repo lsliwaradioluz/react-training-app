@@ -1,0 +1,14 @@
+mutation($input: updateUserInput) {
+  updateUser(input: $input) {
+    id
+    username
+    fullname
+    email
+    active
+    admin
+    image {
+      id
+      url 
+    }
+  }
+}

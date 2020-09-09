@@ -1,0 +1,15 @@
+mutation($input: createFamilyInput) {
+  createFamily(input: $input) {
+    id
+    name
+    createdAt
+    exercises {
+      id
+      name
+      image {
+        id
+        url
+      }
+    }
+  }
+}

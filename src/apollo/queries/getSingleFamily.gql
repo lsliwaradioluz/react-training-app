@@ -1,0 +1,15 @@
+query getSingleFamily($id: ID!) {
+  family(id: $id) {
+    id
+    name
+    createdAt
+    exercises {
+      id
+      name
+      image {
+        id
+        url
+      }
+    }
+  }
+}

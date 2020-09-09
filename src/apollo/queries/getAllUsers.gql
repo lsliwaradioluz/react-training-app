@@ -1,0 +1,13 @@
+query getAllUsers($id: ID!) {
+  users(id: $id) {
+    id
+    username
+    fullname
+    admin
+    active
+    image {
+      id
+      url
+    }
+  }
+}

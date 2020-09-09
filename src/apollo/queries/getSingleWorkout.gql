@@ -1,0 +1,44 @@
+query($id: ID) {
+  workout(id: $id) {
+    id
+    createdAt
+    scheduled
+    sticky
+    name
+    user {
+      id
+      fullname
+      username
+    } 
+    sections {
+      id
+      name
+      complexes {
+        id
+        name 
+        units {
+          id
+          sets
+          reps
+          time
+          distance 
+          rest
+          remarks
+          feedback
+          exercise {
+            id
+            name
+            image {
+              id
+              url
+            }
+            family {
+              id
+              name
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,16 +1,17 @@
-import { React, styled } from "src/imports/react"
+import { React, styled } from "src/imports/react";
 
 const Icon = (props) => {
   return (
-    <Icn className={`flaticon-${props.name}`}></Icn>
-  )
-}
+    <Icn
+      className={`flaticon-${props.name} ${props.className}`}
+    ></Icn>
+  );
+};
 
 const Icn = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
-`
+`;
 
-
-export default Icon
+export default Icon;

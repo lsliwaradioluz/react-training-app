@@ -1,4 +1,4 @@
-import React from "react"
+import {React} from "src/imports/react"
 
 const Settings = (props) => {
   return (

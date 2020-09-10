@@ -1,5 +1,5 @@
 import { React, styled, colors, withRouter } from "src/imports/react";
-import { Icon } from "src/imports/components";
+import { Icon } from "src/imports/components"
 
 const Navigation = (props) => {
   const reloadPage = () => {

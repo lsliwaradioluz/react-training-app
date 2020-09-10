@@ -1,22 +1,27 @@
-import { React, Component, client, withRouter } from "src/imports/react";
-import { Header, Input, Button } from "src/imports/components";
-import { loginMutation } from "src/imports/apollo"
+import {
+  React,
+  Component,
+  apolloClient,
+  withRouter,
+  connect,
+} from "src/imports/react";
+import { Header, Input, Button } from "src/imports/components"
+import { LOGIN } from "src/imports/apollo"
 import AuthLayout from "src/layouts/Auth";
-import { connect } from "react-redux"
-import * as actionTypes from "src/store/actions"
+import * as actionTypes from "src/store/actions";
 
 class Login extends Component {
   state = {
-    email: "",
-    password: "",
-  }
+    email: "lsliwaradioluz@gmail.com",
+    password: "Manchester15151515",
+  };
 
   updateEmail = (event) => {
-    this.setState({ email: event.target.value })
+    this.setState({ email: event.target.value });
   };
 
   updatePassword = (event) => {
-    this.setState({ password: event.target.value })
+    this.setState({ password: event.target.value });
   };
 
   signIn = async () => {
@@ -25,12 +30,12 @@ class Login extends Component {
       password: this.state.password,
     };
 
-    client
+    apolloClient
       .mutate({
-        mutation: loginMutation,
+        mutation: LOGIN,
         variables: { input },
       })
-      .then(res => {
+      .then((res) => {
         const user = res.data.login.user;
         const token = res.data.login.token;
 
@@ -44,15 +49,13 @@ class Login extends Component {
           active: user.active,
         };
 
-        // this.$apolloHelpers.onLogin(token, undefined, { expires: 7 });
-
-        this.props.setUser(userToSet);
-        this.props.history.push('/dashboard');
+        this.props.setUser(userToSet, token);
+        this.props.history.push("/dashboard");
       })
-      .catch(err => {
-        console.log('Error', err)
+      .catch((err) => {
+        console.log("Error", err);
       });
-  }
+  };
 
   render() {
     return (
@@ -74,18 +77,18 @@ class Login extends Component {
       </AuthLayout>
     );
   }
-};
+}
 
 const mapStateToProps = (state) => {
   return {
-    user: state.user
-  }
-}
+    user: state.user,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setUser: (user) => dispatch({ type: actionTypes.SET_USER, user })
-  }
-}
+    setUser: (user, token) => dispatch({ type: actionTypes.SET_USER, user, token }),
+  };
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Login));

@@ -1,6 +1,5 @@
-import { React, styled, NavLink as Link, colors } from "src/imports/react";
-import { Icon } from "src/imports/components";
-import { connect } from "react-redux";
+import { React, styled, NavLink as Link, colors, connect } from "src/imports/react";
+import { Icon } from "src/imports/components"
 import * as actionTypes from "src/store/actions";
 
 const Navigation = (props) => {

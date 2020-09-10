@@ -1,28 +1,20 @@
-import React from "react";
+import {React, apolloClient} from "src/imports/react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter as Router } from "react-router-dom";
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
-import { createStore } from "redux"
-import { Provider } from "react-redux"
-import reducer from "src/store/reducer"
+import { ApolloProvider } from "@apollo/client";
+import { createStore } from "redux";
+import { Provider } from "react-redux";
+import reducer from "src/store/reducer";
 
-export const client = new ApolloClient({
-  uri:
-    process.env.NODE_ENV == "development"
-      ? "http://localhost:1337/api/graphql"
-      : "https://piti-api.herokuapp.com/api/graphql",
-  cache: new InMemoryCache(),
-});
-
-const store = createStore(reducer)
+const store = createStore(reducer);
 
 const app = (
   <Router>
     <Provider store={store}>
-      <ApolloProvider client={client}>
+      <ApolloProvider client={apolloClient}>
         <App />
       </ApolloProvider>
     </Provider>

@@ -1,21 +1,28 @@
-import { React, styled, colors } from "src/imports/react";
+import { React, colors, styled } from "src/imports/react";
+import { Icon as icon } from "src/imports/components";
 
 const Input = (props) => {
   let label = null;
+  let icon = null
 
-  if (props.value && props.value.length > 0) {
+  if (props.value && props.value.length > 0 && !props.hideLabel) {
     label = <Label>{props.placeholder}</Label>;
+  }
+  if (props.search) {
+    icon = <Icon name="search" color={colors.faded} />
   }
 
   return (
     <InputContainer>
       {label}
+      {icon}
       <Inpt
         placeholder={props.placeholder}
         type={props.type}
         onChange={props.onChange}
         value={props.value}
         spellCheck={props.spellcheck ? props.spellcheck : false}
+        search={props.search}
       />
     </InputContainer>
   );
@@ -37,6 +44,13 @@ const Label = styled.label`
   color: ${colors.faded};
 `;
 
+const Icon = styled(icon)`
+  position: absolute;
+  bottom: 7px;
+  color: ${colors.faded};
+  font-size: 12px;
+`
+
 const Inpt = styled.input`
   outline: none;
   border: none;
@@ -50,7 +64,7 @@ const Inpt = styled.input`
   background-color: transparent;
   display: block;
   width: 100%;
-  padding: 1rem 1rem 0 0;
+  padding: 1rem 1rem 0 ${props => props.search ? '1rem' : '0'};
   font-size: 14px;
   height: 45px;
   transition: all 0.25s ease;

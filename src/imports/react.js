@@ -1,11 +1,10 @@
 export { default as React, Component, useContext, Fragment } from "react";
 export { Switch, Route, Link, NavLink, BrowserRouter, Redirect, withRouter } from "react-router-dom"
-
-// export { default as Aux } from "src/hoc/Auxillary";
+export { connect } from "react-redux"
+export { useQuery } from "@apollo/client"
+export { default as apolloClient } from "src/apollo/clientConfig"
 export { default as styled, keyframes, css } from "styled-components";
-// export { default as PropTypes } from "prop-types";
 export { default as axios } from "axios";
-export { client } from "src/index"
 
 export const colors = {
   primary: '#1B1E31',
@@ -15,3 +14,5 @@ export const colors = {
   white: '#ffffff',
   dirtywhite: '#ffffffdc',
 }
+
+

@@ -7,8 +7,8 @@ import {
 } from "src/imports/react";
 import { Header, Input, Button } from "src/imports/components"
 import { LOGIN } from "src/imports/apollo"
-import AuthLayout from "src/layouts/Auth";
-import * as actionTypes from "src/store/actions";
+import AuthLayout from "src/layouts/Login";
+import { setUser } from "src/store/actions";
 
 class Login extends Component {
   state = {
@@ -87,7 +87,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setUser: (user, token) => dispatch({ type: actionTypes.SET_USER, user, token }),
+    setUser: (user, token) => dispatch(setUser(user, token)),
   };
 };
 

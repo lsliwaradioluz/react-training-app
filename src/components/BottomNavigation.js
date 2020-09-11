@@ -1,6 +1,6 @@
 import { React, styled, NavLink as Link, colors, connect } from "src/imports/react";
 import { Icon } from "src/imports/components"
-import * as actionTypes from "src/store/actions";
+import { unsetUser} from "src/store/actions";
 
 const Navigation = (props) => {
   return (
@@ -65,7 +65,7 @@ const BottomLink = styled(Link)`
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    unsetUser: () => dispatch({ type: actionTypes.UNSET_USER }),
+    unsetUser: () => dispatch(unsetUser()),
   };
 };
 

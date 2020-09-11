@@ -35,12 +35,18 @@ class Exercises extends Component {
   render() {
     let elements = <Placeholder />;
     if (this.state.families) {
-      const filteredFamilies = this.state.families.filter(family => {
+      const filteredFamilies = this.state.families.filter((family) => {
         const name = family.name.toLowerCase();
         const filter = this.state.filter.toLowerCase().trim();
-        return name.includes(filter)
-      })
-      const familyTabs = filteredFamilies.map((family) => <FamilyTab key={family.id} family={family} />);
+        return name.includes(filter);
+      });
+      const familyTabs = filteredFamilies.map((family) => (
+        <FamilyTab
+          key={family.id}
+          family={family}
+          pathname={this.props.history.location.pathname}
+        />
+      ));
 
       elements = (
         <Fragment>
@@ -63,7 +69,11 @@ class Exercises extends Component {
       );
     }
 
-    return <DefaultLayout>{elements}</DefaultLayout>;
+    return (
+      <DefaultLayout>
+        {elements}
+      </DefaultLayout>
+    )
   }
 }
 

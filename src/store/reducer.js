@@ -1,4 +1,4 @@
-import * as actionTypes from "src/store/actions"
+import * as actionTypes from "src/store/actionTypes"
 import Cookies from "js-cookie"
 
 const initialState = {

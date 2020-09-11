@@ -18,7 +18,7 @@ const FamilyTab = (props) => {
   };
 
   return (
-    <Tab to="/dupa">
+    <Tab to={`${props.pathname}/${props.family.id}`}>
       <div>
         <TabName>{props.family.name}</TabName>
         <TabCaption>{familyDescription()}</TabCaption>

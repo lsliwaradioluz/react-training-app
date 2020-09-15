@@ -6,22 +6,22 @@ const Navigation = (props) => {
   return (
     <nav>
       <BottomLinks>
-        <BottomLink exact to="/dashboard">
+        <BottomLink to="/dashboard">
           <Icon name="home" />
         </BottomLink>
-        <BottomLink exact to="/exercises">
+        <BottomLink to="/exercises">
           <Icon name="gymnast" />
         </BottomLink>
-        <BottomLink exact to="/workouts">
+        <BottomLink to="/workouts">
           <Icon name="menu" />
         </BottomLink>
-        <BottomLink exact to="/users">
+        <BottomLink to="/users">
           <Icon name="user" />
         </BottomLink>
-        <BottomLink exact to="/settings">
+        <BottomLink to="/settings">
           <Icon name="settings" />
         </BottomLink>
-        <BottomLink exact to="/login" onClick={props.unsetUser}>
+        <BottomLink to="/login" onClick={props.unsetUser}>
           <Icon name="login" />
         </BottomLink>
       </BottomLinks>

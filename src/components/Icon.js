@@ -12,6 +12,7 @@ const Icn = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: initial;
 `;
 
 export default Icon;

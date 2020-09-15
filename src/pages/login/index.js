@@ -8,7 +8,7 @@ import {
 import { Header, Input, Button } from "src/imports/components"
 import { LOGIN } from "src/imports/apollo"
 import AuthLayout from "src/layouts/Login";
-import { setUser } from "src/store/actions";
+import { setNotification, setUser } from "src/store/actions";
 
 class Login extends Component {
   state = {
@@ -53,7 +53,15 @@ class Login extends Component {
         this.props.history.push("/dashboard");
       })
       .catch((err) => {
-        console.log("Error", err);
+        let message
+        if (err.message === "User was not found") {
+          message = "Nie znaleziono takiego użytkownika!"
+        } else if (err.message === "Password is incorrect") {
+          message = "Podane hasło jest nieprawidłowe!"
+        } else {
+          message = "Logowanie nie powiodło się. Sprawdź połączenie z Internetem"
+        }
+        this.props.setNotification(message)
       });
   };
 
@@ -88,6 +96,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     setUser: (user, token) => dispatch(setUser(user, token)),
+    setNotification: (notification) => dispatch(setNotification(notification))
   };
 };
 

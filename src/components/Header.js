@@ -8,6 +8,9 @@ const Header = (props) => {
 
 const Hdr = styled.h1`
   color: ${colors.headers};
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `
 
 export default Header

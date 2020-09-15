@@ -1,8 +1,12 @@
 import * as actionTypes from "src/store/actionTypes"
 import Cookies from "js-cookie"
 
+const user = Cookies.get("user")
+
 const initialState = {
-  user: JSON.parse(Cookies.get("user")), 
+  user: user && JSON.parse(user),
+  activeContextMenu: null,
+  notification: null, 
 }
 
 const reducer = (state = initialState, action) => {
@@ -20,6 +24,16 @@ const reducer = (state = initialState, action) => {
       return {
         ...state, 
         user: null,
+      }
+    case actionTypes.SET_CONTEXT_MENU:
+      return {
+        ...state, 
+        activeContextMenu: action.contextMenuID
+      }
+    case actionTypes.SET_NOTIFICATION:
+      return {
+        ...state, 
+        notification: action.notification
       }
     default: 
       return state

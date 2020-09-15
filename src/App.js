@@ -5,11 +5,16 @@ import 'src/assets/styles/icons.css'
 import { Switch, Route, Redirect, Fragment } from "src/imports/react"
 import { connect } from "react-redux"
 
+import Notification from "src/components/Notification"
+import Confirm from "src/components/Confirm"
+
 import RegisterPage from "src/pages/register/index"
 import LoginPage from "src/pages/login/index"
 import DashboardPage from "src/pages/dashboard/index"
 import ExercisesPage from "src/pages/exercises/index"
 import ExercisePage from "src/pages/exercises/_id/index";
+import NewFamilyPage from "src/pages/exercises/new-family/index"
+import EditFamilyPage from "src/pages/exercises/_id/edit-family"
 import WorkoutsPage from "src/pages/workouts/index"
 import UsersPage from "src/pages/users/index"
 import SettingsPage from "src/pages/settings/index"
@@ -24,8 +29,12 @@ const App = (props) => {
           props.user ? 
           <Fragment>
             <Route exact path="/dashboard" component={DashboardPage} />
+            <Switch>
+              <Route exact path="/exercises/new-family" component={NewFamilyPage} />
+              <Route exact path="/exercises/:id" component={ExercisePage} />
+              <Route exact path="/exercises/:id/edit-family" component={EditFamilyPage} />          
+            </Switch>
             <Route exact path="/exercises" component={ExercisesPage} />
-            <Route exact path={'/exercises/:id'} component={ExercisePage} />
             <Route exact path="/workouts" component={WorkoutsPage} />
             <Route exact path="/users" component={UsersPage} />
             <Route exact path="/settings" component={SettingsPage} />
@@ -34,6 +43,8 @@ const App = (props) => {
         }
         <Redirect from="/" to="/login" />
       </Switch>
+      <Notification />
+      <Confirm />
     </div>
   );
 }

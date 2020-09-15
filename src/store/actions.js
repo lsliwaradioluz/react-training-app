@@ -11,3 +11,11 @@ export const setUser = (user, token) => {
 export const unsetUser = () => {
   return { type: actionTypes.UNSET_USER };
 };
+
+export const setContextMenu = (contextMenuID) => {
+  return { type: actionTypes.SET_CONTEXT_MENU, contextMenuID };
+}
+
+export const setNotification = (notification) => {
+  return { type: actionTypes.SET_NOTIFICATION, notification }
+}

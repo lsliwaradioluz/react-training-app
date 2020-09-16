@@ -6,6 +6,7 @@ export { default as apolloClient } from "src/apollo/clientConfig"
 export { default as styled, keyframes, css } from "styled-components";
 export { default as axios } from "axios";
 export { default as cloneDeep } from "lodash.clonedeep"
+export { default as filters } from "src/plugins/filters"
 
 export const colors = {
   primary: '#1B1E31',

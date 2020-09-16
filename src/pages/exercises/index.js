@@ -60,12 +60,12 @@ class Exercises extends Component {
               <$Icon name="plus" />
             </NavLink>
           </Header>
-          <Caption>
+          <$Caption>
             Piti daje Ci pełną elastyczność w tworzeniu własnej bazy ćwiczeń.
             Dodaj nowe kategorie i przypisz imodpowiednie ćwiczenia. Możesz
             także swobodnie przenosić ćwiczenia między kategoriami, usuwać i
             edytować je zgodnie z własną wizją.
-          </Caption>
+          </$Caption>
           <Input
             placeholder="Wyszukaj kategorię"
             onChange={this.setFilter}
@@ -94,7 +94,7 @@ const mapStateToProps = (state) => {
 
 // Styles
 
-const Caption = styled.p`
+const $Caption = styled.p`
   margin-bottom: 0;
 `;
 

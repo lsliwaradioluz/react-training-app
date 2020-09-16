@@ -17,6 +17,8 @@ const Default = styled.main`
   background-color: ${colors.primary};
   padding: 4.5rem 1rem;
   color: white;
+  display: flex; 
+  flex-direction: column;
 `
 
 export default DefaultLayout

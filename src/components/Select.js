@@ -3,34 +3,41 @@ import { Icon as icon } from "src/imports/components";
 
 const Input = (props) => {
   let label = null;
-  let icon = null
+  let icon = null;
 
   if (props.value && props.value.length > 0 && !props.hideLabel) {
     label = <$Label>{props.placeholder}</$Label>;
   }
   if (props.search) {
-    icon = <$Icon name="search" color={colors.faded} />
+    icon = <$Icon name="search" color={colors.faded} />;
   }
 
+  const renderOptions = () => {
+    return props.options.map((option) => (
+      <$Option key={option.value} value={option.value}>
+        {option.name}
+      </$Option>
+    ));
+  };
+
   return (
-    <$InputContainer>
+    <$SelectContainer>
       {label}
       {icon}
-      <$Input
+      <$Select
         placeholder={props.placeholder}
-        type={props.type}
         onChange={props.onChange}
         value={props.value}
-        spellCheck={props.spellcheck ? props.spellcheck : false}
-        search={props.search}
-      />
-    </$InputContainer>
+      >
+        {renderOptions()}
+      </$Select>
+    </$SelectContainer>
   );
 };
 
 // Style
 
-const $InputContainer = styled.div`
+const $SelectContainer = styled.div`
   position: relative;
   margin-bottom: 1rem;
   transition: margin 0.3s;
@@ -49,9 +56,9 @@ const $Icon = styled(icon)`
   bottom: 7px;
   color: ${colors.faded};
   font-size: 12px;
-`
+`;
 
-const $Input = styled.input`
+const $Select = styled.select`
   outline: none;
   border: none;
   font-family: inherit;
@@ -64,12 +71,14 @@ const $Input = styled.input`
   background-color: transparent;
   display: block;
   width: 100%;
-  padding: 1rem 1rem 0 ${props => props.search ? '1rem' : '0'};
+  padding: 1rem 1rem 0 ${(props) => (props.search ? "1rem" : "0")};
   font-size: 14px;
   height: 45px;
   transition: all 0.25s ease;
   color: ${colors.text};
   border-bottom: 1px solid ${colors.faded};
+  -webkit-appearance: none;
+  -moz-appearance: none;
   &:-webkit-autofill,
   &:-webkit-autofill:hover,
   &:-webkit-autofill:focus,
@@ -84,5 +93,15 @@ const $Input = styled.input`
     color: ${colors.faded};
   }
 `;
+
+const $Option = styled.option`
+  color: white;
+  border: none;
+  background-color: ${colors.secondary};
+  padding-left: .5rem;
+  &:disabled {
+    color: ${colors.faded};
+  }
+`
 
 export default Input;

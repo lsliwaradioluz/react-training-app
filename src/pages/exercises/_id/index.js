@@ -12,7 +12,12 @@ import {
 import { setNotification } from "src/store/actions";
 import ExerciseLayout from "src/layouts/Exercise";
 import { Placeholder, Video, ContextMenu } from "src/imports/components";
-import { GET_FAMILY, DELETE_FAMILY, GET_FAMILIES } from "src/imports/apollo";
+import {
+  GET_FAMILY,
+  DELETE_FAMILY,
+  GET_FAMILIES,
+  DELETE_EXERCISE,
+} from "src/imports/apollo";
 
 class ExercisePage extends Component {
   state = {
@@ -54,6 +59,59 @@ class ExercisePage extends Component {
     return `Kategoria | ${numberOfExercises} ${exerciseDeclination}`;
   };
 
+  deleteExercise = async () => {
+    const deletedExercise = await apolloClient.mutate({
+      mutation: DELETE_EXERCISE,
+      variables: { id: this.getCurrentExercise().id },
+      update: (cache, { data: { deleteExercise } }) => {
+        if (
+          this.state.currentExercise ===
+          this.state.family.exercises.length - 1
+        ) {
+          this.setState((state) => {
+            return { currentExercise: state.currentExercise - 1 };
+          });
+        }
+
+        try {
+          const data = cloneDeep(
+            apolloClient.readQuery({
+              query: GET_FAMILY,
+              variables: { id: this.state.family.id },
+            })
+          );
+
+          data.family.exercises = data.family.exercises.filter(
+            (exercise) => exercise.id !== deleteExercise.id
+          );
+
+          apolloClient.writeQuery({
+            query: GET_FAMILY,
+            variables: { id: this.state.family.id },
+            data,
+          });
+          // this needs tweaking, maybe will disappear after switching to react hooks
+          this.setState({ family: data.family });
+        } catch (err) {
+          console.log(err);
+        }
+      },
+    });
+
+    if (deletedExercise.data.deleteExercise.image) {
+      const file = deletedExercise.data.deleteExercise.image;
+      // const endpoint = `${process.env.endpoint}/api/delete-file`
+      const endpoint = "http://localhost:1337/api/delete-file";
+      fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(file),
+      });
+    }
+  };
+
   deleteFamily = async () => {
     if (this.state.family.exercises.length > 0) {
       this.props.setNotification(
@@ -85,11 +143,7 @@ class ExercisePage extends Component {
               },
             });
           } catch (err) {
-            if (err.message !== "Cannot read property 'families' of null") {
-              this.props.setNotification(
-                "Nie udało się wykonać operacji. Sprawdź połączenie z Internetem"
-              );
-            }
+            console.log(err)
           }
         },
       });
@@ -129,8 +183,19 @@ class ExercisePage extends Component {
               {this.getCurrentExercise().name}
               <ContextMenu
                 buttons={[
-                  { caption: "Edytuj ćwiczenie", icon: "pencil" },
-                  { caption: "Usuń ćwiczenie", icon: "trash" },
+                  {
+                    caption: "Edytuj ćwiczenie",
+                    icon: "pencil",
+                    link: { 
+                      pathname: `/exercises/${this.state.family.id}/edit-exercise`, 
+                      state: { exercise: this.getCurrentExercise().id }
+                    }
+                  },
+                  {
+                    caption: "Usuń ćwiczenie",
+                    icon: "trash",
+                    callback: this.deleteExercise,
+                  },
                 ]}
               />
             </$Name>
@@ -162,11 +227,12 @@ class ExercisePage extends Component {
                   {
                     caption: "Dodaj ćwiczenie",
                     icon: "add-button",
+                    link: `/exercises/${this.state.family.id}/new-exercise`,
                   },
                   {
                     caption: "Edytuj kategorię",
                     icon: "pencil",
-                    link: `/exercises/${this.state.family.id}/edit-family`
+                    link: `/exercises/${this.state.family.id}/edit-family`,
                   },
                   {
                     caption: "Usuń kategorię",

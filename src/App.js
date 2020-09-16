@@ -14,6 +14,8 @@ import DashboardPage from "src/pages/dashboard/index"
 import ExercisesPage from "src/pages/exercises/index"
 import ExercisePage from "src/pages/exercises/_id/index";
 import NewFamilyPage from "src/pages/exercises/new-family/index"
+import NewExercisePage from "src/pages/exercises/_id/new-exercise/index"
+import EditExercisePage from "src/pages/exercises/_id/edit-exercise/index"
 import EditFamilyPage from "src/pages/exercises/_id/edit-family"
 import WorkoutsPage from "src/pages/workouts/index"
 import UsersPage from "src/pages/users/index"
@@ -32,7 +34,9 @@ const App = (props) => {
             <Switch>
               <Route exact path="/exercises/new-family" component={NewFamilyPage} />
               <Route exact path="/exercises/:id" component={ExercisePage} />
-              <Route exact path="/exercises/:id/edit-family" component={EditFamilyPage} />          
+              <Route exact path="/exercises/:id/edit-family" component={EditFamilyPage} /> 
+              <Route exact path="/exercises/:id/new-exercise" component={NewExercisePage} />
+              <Route exact path="/exercises/:id/edit-exercise" component={EditExercisePage} />          
             </Switch>
             <Route exact path="/exercises" component={ExercisesPage} />
             <Route exact path="/workouts" component={WorkoutsPage} />

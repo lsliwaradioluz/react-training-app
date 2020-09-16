@@ -1,14 +1,26 @@
-import { React, styled, colors } from "src/imports/react";
+import { React, styled, colors, css } from "src/imports/react";
 
 const Button = (props) => {
   return (
-    <Btn onClick={props.click} className={props.className}>
+    <Btn onClick={props.click} className={props.className} type="button" theme={props.theme}>
       {props.children}
     </Btn>
   );
 };
 
 // Styles
+const secondaryStyles = css`
+  background-color: transparent;
+  color: ${colors.headers};
+  border: 1px solid ${colors.headers};
+  font-weight: 400;
+`
+
+const tertiaryStyles = css`
+  border-color: white;
+  color: white;
+`
+
 const Btn = styled.button`
   border: none;
   border-radius: 6px;
@@ -32,6 +44,8 @@ const Btn = styled.button`
   &:disabled {
     color: ${colors.inputgray};
   }
+  ${props => props.theme === "secondary" || props.theme === "tertiary" ? secondaryStyles : null}
+  ${props => props.theme !== "secondary" && props.theme === "tertiary" ? tertiaryStyles : null}
 `;
 
 export default Button;

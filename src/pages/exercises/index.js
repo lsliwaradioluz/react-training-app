@@ -25,7 +25,6 @@ class Exercises extends Component {
         userId: this.props.user.id,
       },
     });
-
     this.setState({ families: data.families });
   }
 

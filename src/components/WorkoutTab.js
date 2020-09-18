@@ -1,9 +1,9 @@
-import { React, styled, filters, colors } from "src/imports/react";
+import { React, styled, filters, colors, NavLink } from "src/imports/react";
 import { Icon } from "src/imports/components";
 
 const WorkoutTab = (props) => {
   return (
-    <$WorkoutTab>
+    <$WorkoutTab to={`/workouts/${props.workout.id}`}>
       <$Date>{filters.reverseDate(props.workout.scheduled)}</$Date>
       <$DayAndTime>
         {filters.getDayName(props.workout.scheduled)}{" "}
@@ -14,7 +14,7 @@ const WorkoutTab = (props) => {
   );
 };
 
-const $WorkoutTab = styled.div`
+const $WorkoutTab = styled(NavLink)`
   padding: 0.5rem 0;
   position: relative;
 `;

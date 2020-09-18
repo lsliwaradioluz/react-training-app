@@ -11,7 +11,7 @@ import DefaultLayout from "src/layouts/Default";
 import { Header, Button, Placeholder } from "src/imports/components";
 import WorkoutTab from "src/components/WorkoutTab";
 
-class Workouts extends Component {
+class WorkoutsPage extends Component {
   state = {
     showHomeworks: false,
     workouts: null,
@@ -104,4 +104,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(Workouts);
+export default connect(mapStateToProps)(WorkoutsPage);

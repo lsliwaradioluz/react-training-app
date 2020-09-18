@@ -34,6 +34,14 @@ class ContextMenu extends Component {
     }
   };
 
+  renderTrigger = () => {
+    if (this.props.trigger) {
+      return this.props.trigger
+    } else {
+      return <$Icon name="vertical-dots" />
+    }
+  }
+
   renderMenuButtons = () => {
     let buttons = null;
     if (this.state.id === this.props.activeContextMenu) {
@@ -69,7 +77,7 @@ class ContextMenu extends Component {
     return (
       <$ContextMenu>
         <button id={this.state.id} onClick={this.clickTriggerHandler}>
-          <$Icon name="vertical-dots" />
+          {this.renderTrigger()}
         </button>
         <$Buttons>{this.renderMenuButtons()}</$Buttons>
       </$ContextMenu>
@@ -94,12 +102,6 @@ const $Buttons = styled.div`
   right: 20px;
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.233);
   z-index: 1000;
-  button {
-    text-align: left;
-    padding: 0.5rem;
-    padding-right: 2.5rem;
-    font-size: 12px;
-  }
 `;
 
 const buttonStyles = css`
@@ -108,7 +110,9 @@ const buttonStyles = css`
   font-weight: 300;
   font-size: 12px;
   padding: .5rem;
+  padding-right: 1rem;
   color: black;
+  white-space: nowrap;
 `
 
 const $Button = styled.button`

@@ -34,6 +34,13 @@ class ExercisePage extends Component {
     });
 
     this.setState({ family: data.family });
+
+    if (this.props.location.state.exerciseID) {
+      const exerciseIndex = this.state.family.exercises.findIndex(
+        (exercise) => exercise.id === this.props.location.state.exerciseID
+      );
+      this.setState({ currentExercise: exerciseIndex });
+    }
   }
 
   setCurrentExercise = (newIndex) => {

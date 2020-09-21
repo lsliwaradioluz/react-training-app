@@ -1,14 +1,14 @@
 import { cloneDeep, omit } from "src/imports/react";
 
-const clearData = (data) => {
+const removeTypename = (data) => {
   let dataClone = cloneDeep(data);
   if (Array.isArray(dataClone)) {
-    return dataClone.map((el) => clearData(el));
+    return dataClone.map((el) => removeTypename(el));
   }
 
   for (let key in dataClone) {
     if (Array.isArray(dataClone[key])) {
-      dataClone[key] = dataClone[key].map((el) => clearData(el));
+      dataClone[key] = dataClone[key].map((el) => removeTypename(el));
     } else if (key === "exercise") {
       dataClone[key] = dataClone[key].id;
     }
@@ -17,5 +17,5 @@ const clearData = (data) => {
   return omit(dataClone, "__typename", "id");
 };
 
-export default clearData;
+export default removeTypename;
 

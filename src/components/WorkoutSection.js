@@ -54,6 +54,7 @@ const $Section = styled.div`
   flex-direction: column;
   flex-grow: 1;
   padding-bottom: 25px;
+  padding: 1rem;
 `;
 
 const $SectionName = styled.h3`

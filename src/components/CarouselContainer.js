@@ -10,7 +10,6 @@ const CarouselContainer = props => {
 
 const $CarouselContainer = styled.div`
   margin-left: -1rem;
-  padding: 1rem;
   width: calc(100% + 2rem);
   background-color: ${colors.secondary};
 `

@@ -20,7 +20,8 @@ import {
   Icon,
   Modal,
 } from "src/imports/components";
-import prepareSectionsForMutation from "src/utils/prepareSectionsForMutation"
+import prepareSectionsForMutation from "src/utils/removeTypename"
+import Carousel from "src/components/Carousel"
 
 class WorkoutPage extends Component {
   state = {
@@ -74,7 +75,7 @@ class WorkoutPage extends Component {
     );
   };
 
-  renderWorkoutSections = () => {
+  renderSections = () => {
     const sections = this.workout.sections.map((section) => (
       <WorkoutSection
         key={section.id}
@@ -82,8 +83,15 @@ class WorkoutPage extends Component {
         unitButtons={this.renderSectionButtons}
       />
     ));
-    return <CarouselContainer>{sections}</CarouselContainer>;
-  };
+    return ( 
+      <CarouselContainer>
+        <Carousel>
+          {sections}
+          {sections}
+        </Carousel>
+      </CarouselContainer>
+    )  
+};
 
   renderFeedbackEditor = () => {
     let feedbackEditor = null;
@@ -144,7 +152,7 @@ class WorkoutPage extends Component {
             wiedział, jak Ci poszło.
           </p>
           <$Button theme="tertiary">Asystent</$Button>
-          {this.renderWorkoutSections()}
+          {this.renderSections()}
           {this.renderFeedbackEditor()}
         </DefaultLayout>
       );

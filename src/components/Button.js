@@ -1,20 +1,34 @@
-import { React, styled, colors, css } from "src/imports/react";
+import { React, styled, colors, css, NavLink } from "src/imports/react";
 
 const Button = (props) => {
-  return (
-    <Btn
-      onClick={props.click}
-      className={props.className}
-      type="button"
-      theme={props.theme}
-      active={props.active}
-    >
-      {props.children}
-    </Btn>
-  );
+  let button;
+  if (props.to) {
+    button = (
+      <$ButtonLink
+        to={props.to}
+        className={props.className}
+        theme={props.theme}
+        active={props.active}
+      >
+        {props.children}
+      </$ButtonLink>
+    );
+  } else {
+    button = (
+      <$Button
+        onClick={props.click}
+        className={props.className}
+        type="button"
+        theme={props.theme}
+        active={props.active}
+      >
+        {props.children}
+      </$Button>
+    );
+  }
+  return button;
 };
 
-// Styles
 const secondaryStyles = css`
   background-color: transparent;
   color: ${colors.headers};
@@ -46,7 +60,7 @@ const switchActiveStyles = css`
   border-bottom: 1px solid ${colors.headers} !important;
 `;
 
-const Btn = styled.button`
+const finalStyles = css`
   border: none;
   border-radius: 6px;
   outline: none;
@@ -81,6 +95,14 @@ const Btn = styled.button`
     props.theme === "switch" ? switchStyles : null}
   ${(props) =>
     props.active ? switchActiveStyles : null}
+`;
+
+const $Button = styled.button`
+  ${finalStyles}
+`;
+
+const $ButtonLink = styled(NavLink)`
+  ${finalStyles}
 `;
 
 export default Button;

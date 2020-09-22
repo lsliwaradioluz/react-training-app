@@ -35,7 +35,7 @@ class ExercisePage extends Component {
 
     this.setState({ family: data.family });
 
-    if (this.props.location.state.exerciseID) {
+    if (this.props.location.state) {
       const exerciseIndex = this.state.family.exercises.findIndex(
         (exercise) => exercise.id === this.props.location.state.exerciseID
       );

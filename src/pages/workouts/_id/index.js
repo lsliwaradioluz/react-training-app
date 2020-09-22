@@ -25,7 +25,7 @@ import Carousel from "src/components/Carousel"
 
 class WorkoutPage extends Component {
   state = {
-    dataLoaded: false,
+    mounted: false,
     editingFeedback: false,
   };
 
@@ -46,7 +46,7 @@ class WorkoutPage extends Component {
     });
 
     this.workout = cloneDeep(data.workout);
-    this.setState({ dataLoaded: true });
+    this.setState({ mounted: true });
   }
 
   renderSectionButtons = (unit) => {
@@ -132,13 +132,15 @@ class WorkoutPage extends Component {
   };
 
   render() {
+    const assistantLink = `${this.props.history.location.pathname}/assistant`
+
     let view = (
       <DefaultLayout>
         <Placeholder />
       </DefaultLayout>
     );
 
-    if (this.state.dataLoaded) {
+    if (this.state.mounted) {
       view = (
         <DefaultLayout>
           <Header>
@@ -151,7 +153,7 @@ class WorkoutPage extends Component {
             trening krok po kroku. Dodawaj komentarze do ćwiczeń, aby trener
             wiedział, jak Ci poszło.
           </p>
-          <$Button theme="tertiary">Asystent</$Button>
+          <$Button to={assistantLink} theme="tertiary">Asystent</$Button>
           {this.renderSections()}
           {this.renderFeedbackEditor()}
         </DefaultLayout>

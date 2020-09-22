@@ -17,7 +17,7 @@ class Carousel extends Component {
   componentDidMount() {
     this.setState({ mounted: true });
     this.stroke = this.wrapperRef.current.offsetWidth;
-    this.numberOfSlides = this.wrapperRef.current.scrollWidth / this.stroke - 1;
+    this.numberOfSlides = this.wrapperRef.current.scrollWidth / this.stroke;
   }
 
   onTouchStartHandler = (event) => {
@@ -28,14 +28,16 @@ class Carousel extends Component {
     this.currentMove = this.touchStart - event.touches[0].screenX;
   };
 
-  onTouchEndHandler = (event) => {
+  onTouchEndHandler = () => {
     if (
       this.currentMove > 40 &&
-      this.state.currentIndex < this.numberOfSlides
+      this.state.currentIndex + 1 < this.numberOfSlides
     ) {
       this.changeSlide(this.state.currentIndex + 1);
     } else if (this.currentMove < -40 && this.state.currentIndex > 0) {
       this.changeSlide(this.state.currentIndex - 1);
+    } else {
+      this.changeSlide(this.state.currentIndex)
     }
 
     this.touchStart = 0;
@@ -52,19 +54,12 @@ class Carousel extends Component {
       return;
     }
 
-    const indicators = [],
-      numberOfSlides =
-        this.wrapperRef.current.scrollWidth /
-        this.wrapperRef.current.offsetWidth;
+    const indicators = []
 
-    for (let i = 0; i < numberOfSlides; i++) {
-      let active = false;
-      if (this.state.currentIndex === i) {
-        active = true;
-      }
+    for (let i = 0; i < this.numberOfSlides; i++) {
       indicators.push(
         <$Indicator
-          active={active}
+          active={this.state.currentIndex === i}
           key={`indicator-${i}`}
           onClick={this.changeSlide.bind(this, i)}
         />

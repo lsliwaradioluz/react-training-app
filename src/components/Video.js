@@ -2,16 +2,16 @@ import { React, styled } from "src/imports/react";
 
 const Video = (props) => {
   return (
-    <VideoContainer opacity={props.opacity}>
-      <VideoElement autoPlay loop muted playsInline>
+    <$Video opacity={props.opacity}>
+      <$Element autoPlay loop muted playsInline>
         <source src={props.source} type="video/webm" />
         <source src={props.source} type="video/mp4" />
-      </VideoElement>
-    </VideoContainer>
-  );
+      </$Element>
+    </$Video>
+  )
 };
 
-const VideoContainer = styled.div`
+const $Video = styled.div`
   position: absolute;
   left: 0;
   top: 0;
@@ -33,7 +33,7 @@ const VideoContainer = styled.div`
   }
 `;
 
-const VideoElement = styled.video`
+const $Element = styled.video`
   position: absolute;
   object-fit: cover;
   height: 100%;

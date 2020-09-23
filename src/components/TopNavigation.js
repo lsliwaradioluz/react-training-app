@@ -12,7 +12,7 @@ const Navigation = (props) => {
 
   return (
     <nav>
-      <TopLinks>
+      <TopLinks color={props.color}>
         <TopLink onClick={goBack}>
           <Icon name="left-arrow-2" />
         </TopLink>
@@ -34,10 +34,11 @@ const TopLinks = styled.ul`
   padding: 1rem;
   display: flex;
   justify-content: space-between;
+  color: ${props => props.color ? props.color : colors.faded};
 `;
 
 const TopLink = styled.li`
-  color: ${colors.faded};
+  color: inherit;
 `;
 
 export default withRouter(Navigation);

@@ -6,17 +6,24 @@ import {
   apolloClient,
   cloneDeep,
   colors,
+  filters,
+  connect,
 } from "src/imports/react";
-import { Video, Placeholder } from "src/imports/components";
+import { Video, Placeholder, Icon } from "src/imports/components";
 import { GET_WORKOUT } from "src/imports/apollo";
 import DefaultLayout from "src/layouts/Default";
 import ExerciseLayout from "src/layouts/Exercise";
+import Timer from "src/components/AssistantTimer";
+import { setNotification } from "src/store/actions";
 
 class WorkoutAssistantPage extends Component {
   constructor() {
     super();
     this.state = {
       controls: [0, 0, 0],
+      timer: null,
+      automaticModeOn: false,
+      stopwatchModeOn: false,
     };
   }
 
@@ -36,11 +43,11 @@ class WorkoutAssistantPage extends Component {
     const modifiedWorkout = cloneDeep(workout);
     modifiedWorkout.sections.forEach((section, sectionIndex) => {
       section.complexes.forEach((complex, complexIndex) => {
-        let units = []
-        let sortedUnits = complex.units.sort((a, b) => b.sets - a.sets)
+        let units = [];
+        let sortedUnits = complex.units.sort((a, b) => b.sets - a.sets);
         sortedUnits.forEach((unit, index) => {
           for (let i = 0; i < unit.sets; i++) {
-            units[index + i * complex.units.length] = unit
+            units[index + i * complex.units.length] = unit;
           }
         });
 
@@ -87,16 +94,16 @@ class WorkoutAssistantPage extends Component {
   }
 
   getCurrentSection = () => {
-    return this.workout.sections[this.state.controls[2]]
-  }
+    return this.workout.sections[this.state.controls[2]];
+  };
 
   getCurrentComplex = () => {
-    return this.getCurrentSection().complexes[this.state.controls[1]]
-  }
+    return this.getCurrentSection().complexes[this.state.controls[1]];
+  };
 
   getCurrentUnit = () => {
-    return this.getCurrentComplex().units[this.state.controls[0]]
-  }
+    return this.getCurrentComplex().units[this.state.controls[0]];
+  };
 
   navigate = (controlIndex, newControlValue) => {
     const controls = [...this.state.controls];
@@ -136,23 +143,41 @@ class WorkoutAssistantPage extends Component {
     }
   };
 
+  updateTimer = (value) => {
+    this.setState({ timer: value });
+  };
+
+  toggleAutomaticMode = () => {
+    this.setState(
+      (state) => ({ automaticModeOn: !state.automaticModeOn }),
+      () => {
+        this.props.setNotification(
+          this.state.automaticModeOn
+            ? "Tryb automatyczny włączony"
+            : "Tryb automatyczny wyłączony"
+        );
+      }
+    );
+  };
+
+  toggleStopwatchMode = () => {
+    this.setState((state) => ({ stopwatchModeOn: !state.stopwatchModeOn }));
+  };
+
   renderVideo = () => {
-    let 
-      source,
-      nextUnit = this.getCurrentComplex().units[this.state.controls[0] + 1];
+    let source,
+      unit = this.getCurrentUnit();
 
     if (
-      this.getCurrentUnit().exercise.name == "Odpocznij" ||
-      this.getCurrentUnit().exercise.name == "Rozpoczynasz nowy blok"
+      this.getCurrentUnit().exercise.name === "Odpocznij" ||
+      this.getCurrentUnit().exercise.name === "Rozpoczynasz nowy blok"
     ) {
-      source = nextUnit.exercise.image
-        ? nextUnit.exercise.image.url
-        : "https://res.cloudinary.com/drsgb4wld/video/upload/v1599222650/20200518_184115_001_002_xhmxyn.mp4";
-    } else {
-      source = this.getCurrentUnit().exercise.image
-        ? this.getCurrentUnit().exercise.image.url
-        : "https://res.cloudinary.com/drsgb4wld/video/upload/v1599222650/20200518_184115_001_002_xhmxyn.mp4";
+      unit = this.getCurrentComplex().units[this.state.controls[0] + 1];
     }
+
+    source = unit.exercise.image
+      ? unit.exercise.image.url
+      : "https://res.cloudinary.com/drsgb4wld/video/upload/v1599222650/20200518_184115_001_002_xhmxyn.mp4";
 
     return (
       <Video
@@ -166,11 +191,29 @@ class WorkoutAssistantPage extends Component {
   renderUnitDetails = () => {
     const remarks = this.getCurrentUnit().remarks || "Wykonaj teraz";
     return (
-      <Fragment>
-        <h3>{this.getCurrentUnit().exercise.name}</h3>
-        <p>{remarks}</p>
-      </Fragment>
+      <div>
+        <$ExerciseName>{this.getCurrentUnit().exercise.name}</$ExerciseName>
+        <$ExerciseRemarks>{remarks}</$ExerciseRemarks>
+      </div>
     );
+  };
+
+  renderRepetitions = () => {
+    let repetitions = "";
+    let current = this.getCurrentUnit();
+    if (current.reps) repetitions += `${current.reps}`;
+    if (current.reps && current.time) repetitions += `x`;
+    if (current.time) repetitions += `${current.time}s`;
+    if (current.distance) repetitions = `${current.distance}m`;
+
+    let view = <$Repetitions>{repetitions}</$Repetitions>;
+    if ((current.time && !current.reps) || this.state.stopwatchModeOn) {
+      view = (
+        <$Repetitions>{filters.convertSecToMin(this.state.timer)}</$Repetitions>
+      );
+    }
+
+    return view;
   };
 
   renderProgressBar = () => {
@@ -179,7 +222,8 @@ class WorkoutAssistantPage extends Component {
     const bars = [];
     for (
       let i = 0;
-      i < this.getCurrentSection().complexes[this.state.controls[1]].units.length;
+      i <
+      this.getCurrentSection().complexes[this.state.controls[1]].units.length;
       i++
     ) {
       bars.push(
@@ -198,6 +242,47 @@ class WorkoutAssistantPage extends Component {
         </$SectionInfo>
         <$ProgressBars>{bars}</$ProgressBars>
       </Fragment>
+    );
+  };
+
+  renderButtonPanel = () => {
+    let buttons = [
+      {
+        iconName: "login",
+        active: this.state.automaticModeOn,
+        cb: this.toggleAutomaticMode,
+      },
+      {
+        iconName: "counterclockwise",
+        active: this.state.stopwatchModeOn,
+        cb: this.toggleStopwatchMode,
+      },
+    ];
+
+    const buttonNodes = buttons.map((button, index) => {
+      return (
+        <$Button active={button.active} onClick={button.cb} key={index}>
+          <Icon name={button.iconName}></Icon>
+        </$Button>
+      );
+    });
+    return (
+      <$ButtonPanel>
+        <$Buttons>{buttonNodes}</$Buttons>
+        <Timer
+          active={this.getCurrentUnit().time > 0 && !this.getCurrentUnit().reps}
+          automatic={this.state.automaticModeOn}
+          stopwatchMode={this.state.stopwatchModeOn}
+          time={this.getCurrentUnit().time}
+          key={this.state.controls[0]}
+          updateTime={this.updateTimer}
+          countdownOver={this.navigate.bind(
+            this,
+            0,
+            this.state.controls[0] + 1
+          )}
+        />
+      </$ButtonPanel>
     );
   };
 
@@ -231,9 +316,13 @@ class WorkoutAssistantPage extends Component {
                 )}
               />
             </$Controls>
-            <$Panel>
+            <$UnitData>
               {this.renderUnitDetails()}
+              {this.renderRepetitions()}
+            </$UnitData>
+            <$Panel>
               {this.renderProgressBar()}
+              {this.renderButtonPanel()}
             </$Panel>
           </$Assistant>
         </ExerciseLayout>
@@ -261,24 +350,44 @@ const $Control = styled.button`
   width: 50%;
 `;
 
+const $ExerciseName = styled.h3`
+  margin-bottom: 0;
+`;
+
+const $ExerciseRemarks = styled.p`
+  font-size: 12px;
+  margin: 0;
+`;
+
+const $UnitData = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 1rem;
+`;
+
+const $Repetitions = styled.p`
+  padding-left: 1rem;
+  line-height: 1;
+  font-size: 32px;
+  margin: 0;
+  color: ${colors.headers};
+`;
+
 const $Panel = styled.div`
   padding: 1rem;
-  h3 {
-    margin-bottom: 0;
-  }
-  p {
-    font-size: 12px;
-  }
 `;
 
 const $SectionInfo = styled.p`
   display: flex;
   justify-content: space-between;
   margin-bottom: 2px;
+  font-size: 12px;
 `;
 
 const $ProgressBars = styled.div`
   display: flex;
+  margin-bottom: 1rem;
 `;
 
 const $ProgressBar = styled.span`
@@ -288,4 +397,26 @@ const $ProgressBar = styled.span`
   flex: 1;
 `;
 
-export default WorkoutAssistantPage;
+const $ButtonPanel = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const $Buttons = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const $Button = styled.button`
+  margin-right: 0.5rem;
+  font-size: 16px;
+  color: ${(props) => (props.active ? colors.headers : "white")};
+`;
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setNotification: (notification) => dispatch(setNotification(notification)),
+  };
+};
+
+export default connect(null, mapDispatchToProps)(WorkoutAssistantPage);

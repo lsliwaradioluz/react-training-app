@@ -4,7 +4,7 @@ import TopNavigation from "src/components/TopNavigation"
 const ExerciseLayout = (props) => {
   return (
     <ExerciseLout>
-      <TopNavigation />
+      <TopNavigation color="white" />
       {props.children}
     </ExerciseLout>
   )

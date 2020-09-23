@@ -41,3 +41,12 @@ exports.getTime = (value) => {
   minutes = minutes < 10 ? `${minutes}0` : minutes
   return `${hours}:${minutes}`
 }
+
+exports.convertSecToMin = (value) => {
+  const minutes = Math.floor(value / 60);
+  const seconds = value % 60
+  const minutesAndSeconds =
+    seconds < 10 ? `${minutes}:0${seconds}` : `${minutes}:${seconds}`
+  return minutesAndSeconds
+}
+

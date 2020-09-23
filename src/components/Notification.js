@@ -13,9 +13,10 @@ const Notification = (props) => {
         ? props.notification.length * 50
         : 1000;
 
-    notification = <$Notification>{props.notification}</$Notification>;
+    notification = <$Notification onClick={unsetNotification}>{props.notification}</$Notification>;
     setTimeout(unsetNotification, notificationDuration);
   }
+
   return notification;
 };
 

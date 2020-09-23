@@ -24,6 +24,7 @@ class WorkoutAssistantPage extends Component {
       timer: null,
       automaticModeOn: false,
       stopwatchModeOn: false,
+      soundOn: false,
     };
   }
 
@@ -147,6 +148,10 @@ class WorkoutAssistantPage extends Component {
     this.setState({ timer: value });
   };
 
+  toggleSoundOn = () => {
+    this.setState((state) => ({ soundOn: !state.soundOn }));
+  };
+
   toggleAutomaticMode = () => {
     this.setState(
       (state) => ({ automaticModeOn: !state.automaticModeOn }),
@@ -236,10 +241,14 @@ class WorkoutAssistantPage extends Component {
     }
     return (
       <Fragment>
-        <$SectionInfo>
-          {this.getCurrentSection().name}{" "}
-          {`${this.state.controls[1] + 1}/${numberOfComplexes}`}
-        </$SectionInfo>
+        <$SectionInfos>
+          <$SectionInfo>{this.getCurrentSection().name} </$SectionInfo>
+          <$SectionInfo>
+            {`${this.getCurrentComplex().name} (${
+              this.state.controls[1] + 1
+            }/${numberOfComplexes})`}
+          </$SectionInfo>
+        </$SectionInfos>
         <$ProgressBars>{bars}</$ProgressBars>
       </Fragment>
     );
@@ -247,6 +256,11 @@ class WorkoutAssistantPage extends Component {
 
   renderButtonPanel = () => {
     let buttons = [
+      {
+        iconName: this.state.soundOn ? "sound" : "mute",
+        active: false,
+        cb: this.toggleSoundOn,
+      },
       {
         iconName: "login",
         active: this.state.automaticModeOn,
@@ -273,6 +287,7 @@ class WorkoutAssistantPage extends Component {
           active={this.getCurrentUnit().time > 0 && !this.getCurrentUnit().reps}
           automatic={this.state.automaticModeOn}
           stopwatchMode={this.state.stopwatchModeOn}
+          soundOn={this.state.soundOn}
           time={this.getCurrentUnit().time}
           key={this.state.controls[0]}
           updateTime={this.updateTimer}
@@ -378,11 +393,15 @@ const $Panel = styled.div`
   padding: 1rem;
 `;
 
-const $SectionInfo = styled.p`
+const $SectionInfos = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-bottom: 2px;
   font-size: 12px;
+`;
+
+const $SectionInfo = styled.p`
+  font-size: 12px;
+  margin-bottom: 2px;
 `;
 
 const $ProgressBars = styled.div`
@@ -408,7 +427,7 @@ const $Buttons = styled.div`
 `;
 
 const $Button = styled.button`
-  margin-right: 0.5rem;
+  margin-right: .75rem;
   font-size: 16px;
   color: ${(props) => (props.active ? colors.headers : "white")};
 `;

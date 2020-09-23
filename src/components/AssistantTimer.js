@@ -10,6 +10,7 @@ class AssistantTimer extends Component {
     };
     this.time = this.props.stopwatchMode ? 0 : this.props.time;
     this.timerInterval = null;
+    this.audio = new Audio(require(`../assets/sounds/beep-triple.mp3`));
   }
 
   componentDidMount() {
@@ -42,12 +43,23 @@ class AssistantTimer extends Component {
       } else {
         if (this.time > 0) {
           this.time--;
+          if (this.state.running && this.props.soundOn) {
+            if (this.time === 30) {
+              this.playAudio("beep-triple.mp3");
+            } else if (this.time === 20) {
+              this.playAudio("beep-double.mp3");
+            } else if ([10,3,2,1].includes(this.time)) {
+              this.playAudio("beep-short.mp3")
+            } else if (this.time === 0) {
+              this.playAudio("beep-long.mp3")
+            }
+          }
         } else {
           this.stop();
           if (this.props.automatic) {
-            this.props.countdownOver()
+            this.props.countdownOver();
           }
-          return
+          return;
         }
       }
       this.props.updateTime(this.time);
@@ -61,7 +73,7 @@ class AssistantTimer extends Component {
 
   reset = () => {
     if (this.state.stopwatchMode) {
-      this.time = 0
+      this.time = 0;
     } else {
       this.time = this.props.time;
     }
@@ -77,6 +89,11 @@ class AssistantTimer extends Component {
     this.time++;
     this.props.updateTime(this.time);
   };
+
+  playAudio(audio) {
+    this.audio.src = require(`../assets/sounds/${audio}`);
+    this.audio.play();
+  }
 
   renderButtons = () => {
     let buttons = [

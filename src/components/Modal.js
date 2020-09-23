@@ -2,7 +2,7 @@ import { React, styled } from "src/imports/react";
 
 const Modal = (props) => {
   const onClickHandler = (event) => {
-    if (event.target.id !== "content") {
+    if (event.target.id !== "content" || !props.onClick) {
       return
     }
     props.onClick()

@@ -19,23 +19,20 @@ import {
   ContextMenu,
   Icon,
   Modal,
+  Carousel,
 } from "src/imports/components";
-import prepareSectionsForMutation from "src/utils/removeTypename"
-import Carousel from "src/components/Carousel"
+import prepareSectionsForMutation from "src/utils/removeTypename";
+import Stopwatch from "src/components/Stopwatch"
 
 class WorkoutPage extends Component {
   state = {
     mounted: false,
     editingFeedback: false,
+    showStopwatch: false,
   };
 
   workout = null;
   editedUnit = null;
-
-  setEditingFeedback = (payload) => {
-    this.editedUnit = payload;
-    this.setState(state => ({ editingFeedback: !state.editingFeedback }));
-  };
 
   async componentDidMount() {
     const { data } = await apolloClient.query({
@@ -48,6 +45,37 @@ class WorkoutPage extends Component {
     this.workout = cloneDeep(data.workout);
     this.setState({ mounted: true });
   }
+
+  setEditingFeedback = (payload) => {
+    this.editedUnit = payload;
+    this.setState((state) => ({ editingFeedback: !state.editingFeedback }));
+  };
+
+  editFeedback = async (newFeedback) => {
+    this.editedUnit.feedback = newFeedback;
+    try {
+      this.updateWorkout();
+      this.setState({ editingFeedback: false });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  toggleShowStopwatch = () => {
+    this.setState(state => ({ showStopwatch: !state.showStopwatch }))
+  }
+
+  updateWorkout = () => {
+    return apolloClient.mutate({
+      mutation: UPDATE_WORKOUT,
+      variables: {
+        input: {
+          id: this.workout.id,
+          sections: prepareSectionsForMutation(this.workout.sections),
+        },
+      },
+    });
+  };
 
   renderSectionButtons = (unit) => {
     let buttons = [
@@ -83,21 +111,20 @@ class WorkoutPage extends Component {
         unitButtons={this.renderSectionButtons}
       />
     ));
-    return ( 
+    return (
       <CarouselContainer>
         <Carousel>
           {sections}
           {sections}
         </Carousel>
       </CarouselContainer>
-    )  
-};
+    );
+  };
 
   renderFeedbackEditor = () => {
-    let feedbackEditor = null;
     if (this.state.editingFeedback) {
-      feedbackEditor = (
-        <Modal onClick={this.setEditingFeedback.bind(this, null)}>
+      return (
+        <Modal>
           <FeedbackEditor
             clickReturn={this.setEditingFeedback.bind(this, null)}
             unit={this.editedUnit}
@@ -105,34 +132,25 @@ class WorkoutPage extends Component {
           />
         </Modal>
       );
-    }
-    return feedbackEditor;
-  };
-
-  editFeedback = async (newFeedback) => {
-    this.editedUnit.feedback = newFeedback;
-    try {
-      this.updateWorkout()
-      this.setState({ editingFeedback: false });
-    } catch (err) {
-      console.log(err)
+    } else {
+      return null;
     }
   };
 
-  updateWorkout = () => {
-    return apolloClient.mutate({
-      mutation: UPDATE_WORKOUT,
-      variables: {
-        input: {
-          id: this.workout.id, 
-          sections: prepareSectionsForMutation(this.workout.sections),
-        }
-      },
-    });
+  renderStopwatch = () => {
+    if (this.state.showStopwatch) {
+      return (
+        <Modal>
+          <Stopwatch close={this.toggleShowStopwatch} />
+        </Modal>
+      );
+    } else {
+      return null;
+    }
   };
 
   render() {
-    const assistantLink = `${this.props.history.location.pathname}/assistant`
+    const assistantLink = `${this.props.history.location.pathname}/assistant`;
 
     let view = (
       <DefaultLayout>
@@ -153,9 +171,17 @@ class WorkoutPage extends Component {
             trening krok po kroku. Dodawaj komentarze do ćwiczeń, aby trener
             wiedział, jak Ci poszło.
           </p>
-          <$Button to={assistantLink} theme="tertiary">Asystent</$Button>
+          <$Buttons>
+            <$Button to={assistantLink} theme="tertiary">
+              Asystent
+            </$Button>
+            <$Button click={this.toggleShowStopwatch} theme="tertiary">
+              Stoper
+            </$Button>
+          </$Buttons>
           {this.renderSections()}
           {this.renderFeedbackEditor()}
+          {this.renderStopwatch()}
         </DefaultLayout>
       );
     }
@@ -163,9 +189,15 @@ class WorkoutPage extends Component {
   }
 }
 
+const $Buttons = styled.div`
+  display: flex;
+  justify-content: space-between;
+`
+
 const $Button = styled(Button)`
   margin-top: 0;
   margin-bottom: 2rem;
+  flex-basis: 49%;
 `;
 
 const $ContextMenuTrigger = styled(Icon)`

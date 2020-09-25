@@ -21,6 +21,7 @@ const Button = (props) => {
         type="button"
         theme={props.theme}
         active={props.active}
+        disabled={props.disabled}
       >
         {props.children}
       </$Button>
@@ -81,7 +82,8 @@ const finalStyles = css`
   margin: 1rem 0;
   transition: all 0.3s;
   &:disabled {
-    color: ${colors.inputgray};
+    opacity: 0.5;
+    cursor: not-allowed;
   }
   ${(props) =>
     props.theme === "secondary" || props.theme === "tertiary"

@@ -28,8 +28,6 @@ const Input = (props) => {
   );
 };
 
-// Style
-
 const $InputContainer = styled.div`
   position: relative;
   margin-bottom: 1rem;

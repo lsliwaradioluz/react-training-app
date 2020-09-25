@@ -19,3 +19,7 @@ export const setContextMenu = (contextMenuID) => {
 export const setNotification = (notification) => {
   return { type: actionTypes.SET_NOTIFICATION, notification }
 }
+
+export const setLoading = (loading) => {
+  return { type: actionTypes.SET_LOADING, loading }
+}

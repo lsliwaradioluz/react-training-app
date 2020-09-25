@@ -7,13 +7,16 @@ const initialState = {
   user: user && JSON.parse(user),
   activeContextMenu: null,
   notification: null, 
+  loading: false, 
 }
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.SET_USER:
       Cookies.set("user", action.user)
-      Cookies.set("piti-token", action.token)
+      if (action.token) {
+        Cookies.set("piti-token", action.token)
+      }
       return {
         ...state, 
         user: action.user,
@@ -34,6 +37,11 @@ const reducer = (state = initialState, action) => {
       return {
         ...state, 
         notification: action.notification
+      }
+    case actionTypes.SET_LOADING:
+      return {
+        ...state,
+        loading: action.loading,
       }
     default: 
       return state

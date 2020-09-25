@@ -12,8 +12,8 @@ import { setNotification, setUser } from "src/store/actions";
 
 class Login extends Component {
   state = {
-    email: "arturandrzejak@gmail.com",
-    password: "123456",
+    email: "lsliwaradioluz@gmail.com",
+    password: "Manchester15151515",
   };
 
   updateEmail = (event) => {

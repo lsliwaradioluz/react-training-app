@@ -9,6 +9,7 @@ mutation($input: loginInput) {
       admin
       active
       image {
+        id
         url
       }
     }

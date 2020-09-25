@@ -9,7 +9,7 @@ import {
   colors,
   cloneDeep,
 } from "src/imports/react";
-import FileInput from "src/components/FileInput";
+import FileManager from "src/components/FileManager";
 import { Input, Select, Button, Video } from "src/imports/components";
 import {
   GET_FAMILIES,
@@ -27,6 +27,8 @@ class ExerciseEditor extends Component {
     },
     loadedVideo: this.props.exercise ? this.props.exercise.image : null,
     startingFamily: this.props.match.params.id,
+    removeFileOnUnmount: true,
+    removeInitialFile: false,
   };
 
   async componentDidMount() {
@@ -101,21 +103,23 @@ class ExerciseEditor extends Component {
           variables: { userId: this.props.userID },
         })
       );
-      
+
       const currentFamily = families.find(
         (family) => family.id === this.state.startingFamily
       );
 
       if (!this.props.exercise) {
-        currentFamily.exercises.push(exercise)
+        currentFamily.exercises.push(exercise);
       }
 
       if (this.state.startingFamily !== this.state.editedExercise.family) {
-        currentFamily.exercises = currentFamily.exercises.filter(e => e.id !== exercise.id)
+        currentFamily.exercises = currentFamily.exercises.filter(
+          (e) => e.id !== exercise.id
+        );
         const newFamily = families.find(
           (family) => family.id === this.state.editedExercise.family
         );
-        newFamily.exercises.push(exercise)
+        newFamily.exercises.push(exercise);
       }
 
       apolloClient.writeQuery({
@@ -123,12 +127,12 @@ class ExerciseEditor extends Component {
         variables: { userId: this.props.userID },
         data: {
           families,
-        }
-      })
+        },
+      });
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
-  }
+  };
 
   createExercise = () => {
     apolloClient
@@ -136,10 +140,11 @@ class ExerciseEditor extends Component {
         mutation: CREATE_EXERCISE,
         variables: { input: this.state.editedExercise },
         update: (cache, { data: { createExercise } }) => {
-          this.updateCache(cache, createExercise)
+          this.updateCache(cache, createExercise);
         },
       })
       .then(() => {
+        this.setState({ removeFileOnUnmount: false });
         this.props.history.goBack();
       })
       .catch(() => {
@@ -157,10 +162,15 @@ class ExerciseEditor extends Component {
           input: { ...this.state.editedExercise, id: this.props.exercise.id },
         },
         update: (cache, { data: { updateExercise } }) => {
-          this.updateCache(cache, updateExercise)
+          this.updateCache(cache, updateExercise);
         },
       })
       .then(() => {
+        this.setState({
+          removeFileOnUnmount: true,
+          removeInitialFile:
+            this.props.exercise.image !== this.state.loadedVideo,
+        });
         this.props.history.goBack();
       })
       .catch(() => {
@@ -169,6 +179,31 @@ class ExerciseEditor extends Component {
         );
       });
   };
+
+  renderFileManager() {
+    return (
+      <Fragment>
+        <$FileManagerContainer>
+          <$FileManagerLabel>Wideo poglądowe</$FileManagerLabel>
+          <p>{this.state.loadedVideo ? "Wybrano plik" : "Nie wybrano pliku"}</p>
+          <$FileManager
+            file={this.state.loadedVideo}
+            allowedFormat="video"
+            addButtonCaption={
+              this.state.loadedVideo ? "Zmień plik" : "Dodaj plik"
+            }
+            onUploadFinish={this.setLoadedVideo}
+            onFileDelete={this.setLoadedVideo.bind(this, null)}
+          />
+        </$FileManagerContainer>
+        {this.state.loadedVideo ? (
+          <$VideoContainer>
+            <Video source={this.state.loadedVideo.url} />
+          </$VideoContainer>
+        ) : null}
+      </Fragment>
+    );
+  }
 
   render() {
     return (
@@ -184,21 +219,12 @@ class ExerciseEditor extends Component {
           value={this.state.editedExercise.name}
         />
         <Select
-          placeholder="Nazwa ćwiczenia"
+          placeholder="Kategoria"
           options={this.generateFamiliesOptions()}
           value={this.state.editedExercise.family}
           onChange={this.changeFamily}
         />
-        {this.state.loadedVideo ? (
-          <$VideoContainer>
-            <Video source={this.state.loadedVideo.url} />
-          </$VideoContainer>
-        ) : null}
-        <FileInput
-          file={this.state.loadedVideo}
-          onUploadFinish={this.setLoadedVideo}
-          onDeleteFile={this.setLoadedVideo.bind(this, null)}
-        />
+        {this.renderFileManager()}
         <$Buttons>
           <$Button click={this.commenceCreateExercise}>Zapisz</$Button>
           <$Button click={this.props.history.goBack}>Anuluj</$Button>
@@ -211,8 +237,34 @@ class ExerciseEditor extends Component {
 const $VideoContainer = styled.div`
   position: relative;
   height: 60vh;
-  border: 1px solid ${colors.faded};
-  border-radius: 6px;
+  border: 1.5px solid white;
+`;
+
+const $FileManagerContainer = styled.div`
+  position: relative;
+  border-bottom: 1px solid ${colors.faded};
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 1rem 0 0.25rem 0;
+  p {
+    margin: 0;
+  }
+`;
+const $FileManagerLabel = styled.p`
+  position: absolute;
+  font-size: 10px;
+  color: ${colors.faded};
+  top: 0;
+  left: 0;
+`;
+
+const $FileManager = styled(FileManager)`
+  button {
+    margin: 0;
+    margin-left: 0.5rem;
+    padding: 4px;
+  }
 `;
 
 const $Buttons = styled.div`

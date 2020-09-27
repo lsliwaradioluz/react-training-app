@@ -12,6 +12,9 @@ const Navigation = (props) => {
         <BottomLink to="/exercises">
           <Icon name="gymnast" />
         </BottomLink>
+        {/* <BottomLink to="/cardio">
+          <Icon name="cardiogram" />
+        </BottomLink> */}
         <BottomLink to="/workouts">
           <Icon name="menu" />
         </BottomLink>

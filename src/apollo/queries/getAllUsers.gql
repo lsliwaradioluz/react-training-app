@@ -3,6 +3,7 @@ query getAllUsers($id: ID!) {
     id
     username
     fullname
+    email
     admin
     active
     image {

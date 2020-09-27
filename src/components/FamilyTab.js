@@ -18,17 +18,17 @@ const FamilyTab = (props) => {
   };
 
   return (
-    <Tab to={`${props.pathname}/${props.family.id}`}>
+    <$FamilyTab to={`${props.pathname}/${props.family.id}`}>
       <div>
-        <TabName>{props.family.name}</TabName>
-        <TabCaption>{familyDescription()}</TabCaption>
+        <$TabName>{props.family.name}</$TabName>
+        <$TabCaption>{familyDescription()}</$TabCaption>
       </div>
       <Icon name="right-arrow" />
-    </Tab>
+    </$FamilyTab>
   );
 };
 
-const Tab = styled(NavLink)`
+const $FamilyTab = styled(NavLink)`
   display: block;
   padding: 0.5rem 0 !important;
   text-decoration: none;
@@ -36,12 +36,12 @@ const Tab = styled(NavLink)`
   justify-content: space-between;
   align-items: center;
 `;
-const TabName = styled.h4`
+const $TabName = styled.h4`
   color: white;
   margin: 0;
 `;
 
-const TabCaption = styled.p`
+const $TabCaption = styled.p`
   color: ${colors.faded};
   font-size: 13px;
   margin-bottom: 0;

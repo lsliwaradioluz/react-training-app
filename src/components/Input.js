@@ -13,7 +13,7 @@ const Input = (props) => {
   }
 
   return (
-    <$InputContainer>
+    <$InputContainer className={props.className}>
       {label}
       {icon}
       <$Input

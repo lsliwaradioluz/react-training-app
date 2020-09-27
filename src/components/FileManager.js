@@ -17,9 +17,9 @@ class FileManager extends Component {
   }
 
   componentWillUnmount() {
-    if (this.props.removeFileOnUnmount) {
+    if (this.props.removeFileOnUnmount && this.state.file) {
       this.removeFileFromDb(this.state.file)
-    } else if (this.props.removeInitialFile) {
+    } else if (this.props.removeInitialFile && this.initialFile) {
       this.removeFileFromDb(this.initialFile)
     }
   }

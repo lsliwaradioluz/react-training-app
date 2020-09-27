@@ -75,7 +75,7 @@ class ContextMenu extends Component {
 
   render() {
     return (
-      <$ContextMenu>
+      <$ContextMenu className={this.props.className}>
         <button id={this.state.id} onClick={this.clickTriggerHandler}>
           {this.renderTrigger()}
         </button>

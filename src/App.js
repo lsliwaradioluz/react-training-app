@@ -13,6 +13,7 @@ import RegisterPage from "src/pages/register/index"
 import LoginPage from "src/pages/login/index"
 import DashboardPage from "src/pages/dashboard/index"
 import ExercisesPage from "src/pages/exercises/index"
+import CardioPage from "src/pages/cardio//index"
 import ExercisePage from "src/pages/exercises/_id/index";
 import NewFamilyPage from "src/pages/exercises/new-family/index"
 import NewExercisePage from "src/pages/exercises/_id/new-exercise/index"
@@ -43,6 +44,7 @@ const App = (props) => {
               <Route exact path="/exercises/:id/edit-exercise" component={EditExercisePage} />          
             </Switch>
             <Route exact path="/exercises" component={ExercisesPage} />
+            <Route exact path="/cardio" component={CardioPage} />
             <Route exact path="/workouts" component={WorkoutsPage} />
             <Route exact path="/workouts/:id" component={WorkoutPage} />
             <Route exact path="/workouts/:id/assistant" component={WorkoutAssistantPage} />

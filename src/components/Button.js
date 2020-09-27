@@ -54,6 +54,7 @@ const switchStyles = css`
   font-size: 14px;
   font-family: "Roboto Condensed", sans-serif;
   background-color: transparent;
+  margin: .5rem 0;
 `;
 
 const switchActiveStyles = css`

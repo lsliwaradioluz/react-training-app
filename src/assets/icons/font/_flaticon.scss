@@ -1,6 +1,6 @@
     /*
     Flaticon icon font: Flaticon
-    Creation date: 21/08/2020 09:36
+    Creation date: 26/09/2020 07:31
     */
 
     @font-face {
@@ -86,7 +86,9 @@
 .flaticon-careless:before { content: "\f12e"; }
 .flaticon-speech-bubble:before { content: "\f12f"; }
 .flaticon-linkedin:before { content: "\f130"; }
-.flaticon-arrows:before { content: "\f131"; }
+.flaticon-cardiogram:before { content: "\f131"; }
+.flaticon-fire-flame:before { content: "\f132"; }
+.flaticon-cardiogram-1:before { content: "\f133"; }
     
     $font-Flaticon-up-arrow: "\f100";
     $font-Flaticon-down-arrow: "\f101";
@@ -137,4 +139,6 @@
     $font-Flaticon-careless: "\f12e";
     $font-Flaticon-speech-bubble: "\f12f";
     $font-Flaticon-linkedin: "\f130";
-    $font-Flaticon-arrows: "\f131";
+    $font-Flaticon-cardiogram: "\f131";
+    $font-Flaticon-fire-flame: "\f132";
+    $font-Flaticon-cardiogram-1: "\f133";

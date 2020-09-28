@@ -3,13 +3,13 @@ import { Icon as icon } from "src/imports/components";
 
 const Input = (props) => {
   let label = null;
-  let icon = null
+  let icon = null;
 
   if (props.value && props.value.length > 0 && !props.hideLabel) {
     label = <$Label>{props.placeholder}</$Label>;
   }
   if (props.search) {
-    icon = <$Icon name="search" color={colors.faded} />
+    icon = <$Icon name="search" color={colors.faded} />;
   }
 
   return (
@@ -17,6 +17,7 @@ const Input = (props) => {
       {label}
       {icon}
       <$Input
+        disabled={props.disabled}
         placeholder={props.placeholder}
         type={props.type}
         onChange={props.onChange}
@@ -47,7 +48,7 @@ const $Icon = styled(icon)`
   bottom: 7px;
   color: ${colors.faded};
   font-size: 12px;
-`
+`;
 
 const $Input = styled.input`
   outline: none;
@@ -62,12 +63,16 @@ const $Input = styled.input`
   background-color: transparent;
   display: block;
   width: 100%;
-  padding: 1rem 1rem 0 ${props => props.search ? '1rem' : '0'};
+  padding: 1rem 1rem 0 ${(props) => (props.search ? "1rem" : "0")};
   font-size: 14px;
   height: 45px;
   transition: all 0.25s ease;
   color: ${colors.text};
   border-bottom: 1px solid ${colors.faded};
+  input[type="date"]::-webkit-inner-spin-button,
+  input[type="date"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+  }
   &:-webkit-autofill,
   &:-webkit-autofill:hover,
   &:-webkit-autofill:focus,
@@ -80,6 +85,9 @@ const $Input = styled.input`
   }
   &::placeholder {
     color: ${colors.faded};
+  }
+  &:disabled {
+    opacity: 0.3;
   }
 `;
 

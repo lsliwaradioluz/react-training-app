@@ -42,6 +42,14 @@ exports.getTime = (value) => {
   return `${hours}:${minutes}`
 }
 
+exports.getDayAndMonth = (value) => {
+  const date = new Date(value)
+  let day = date.getDate()
+  let month = date.getMonth() + 1
+  let dayAndMonth = month < 10 ? `${day}.0${month}` : `${day}.${month}`
+  return dayAndMonth
+}
+
 exports.convertSecToMin = (value) => {
   const minutes = Math.floor(value / 60);
   const seconds = value % 60

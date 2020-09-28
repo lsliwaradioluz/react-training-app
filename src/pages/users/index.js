@@ -33,10 +33,10 @@ class Users extends Component {
       variables: { id: this.props.userID },
     });
     this.setState({ users: data.users });
-  }
+  };
 
   componentDidMount() {
-    this.getUsers()
+    this.getUsers();
   }
 
   toggleShowActive = (newValue) => {
@@ -108,9 +108,8 @@ class Users extends Component {
             </button>
           </Header>
           <$Caption>
-            Dotknij karty podopiecznego, by zobaczyć jego treningi. Chcesz
-            przekazać podopiecznego innemu trenerowi? Transferuj! Skończyliście
-            współpracę? Przenieś go do archiwum.
+            Dotknij karty podopiecznego, by zobaczyć jego treningi. Jeżeli
+            skończyliście współpracę, przenieś go do archiwum. 
           </$Caption>
           <$Buttons>
             <Button

@@ -2,7 +2,7 @@ import {React, styled, colors} from "src/imports/react"
 
 const CarouselContainer = props => {
   return (
-    <$CarouselContainer>
+    <$CarouselContainer className={props.className}>
       {props.children}
     </$CarouselContainer>
   )

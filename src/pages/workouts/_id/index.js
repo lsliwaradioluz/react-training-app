@@ -77,7 +77,7 @@ class WorkoutPage extends Component {
     });
   };
 
-  renderSectionButtons = (unit) => {
+  renderUnitButtons = (unit) => {
     let buttons = [
       {
         caption: "Dodaj notatkę",
@@ -108,7 +108,7 @@ class WorkoutPage extends Component {
       <WorkoutSection
         key={section.id}
         section={section}
-        unitButtons={this.renderSectionButtons}
+        unitButtons={this.renderUnitButtons}
       />
     ));
     return (

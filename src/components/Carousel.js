@@ -18,6 +18,13 @@ class Carousel extends Component {
     this.setState({ mounted: true });
     this.stroke = this.wrapperRef.current.offsetWidth;
     this.numberOfSlides = this.wrapperRef.current.scrollWidth / this.stroke;
+    this.changeSlide(this.state.currentIndex)
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.index !== this.props.index) {
+      this.changeSlide(this.props.index)
+    }
   }
 
   onTouchStartHandler = (event) => {

@@ -12,10 +12,10 @@ class WorkoutSection extends Component {
   renderUnits = (complex) => {
     const units = complex.units.map((unit) => (
       <$Unit key={unit.id}>
-        <$UnitHeader>
-          <$UnitName>{unit.exercise.name}</$UnitName>
-          {this.props.unitButtons(unit)}
-        </$UnitHeader>
+        <$UnitName>
+          {unit.exercise.name}
+          {this.props.unitButtons ? this.props.unitButtons(unit) : null}
+        </$UnitName>
         <ul>
           <$UnitDetail>{this.generateSetsAndReps(unit)}</$UnitDetail>
           <$UnitDetail>{unit.remarks}</$UnitDetail>
@@ -31,7 +31,10 @@ class WorkoutSection extends Component {
   renderComplexes = () => {
     const complexes = this.props.section.complexes.map((complex) => (
       <$Complex key={complex.id}>
-        <$ComplexName>{complex.name}</$ComplexName>
+        <$ComplexName>
+          {complex.name}{" "}
+          {this.props.complexButtons ? this.props.complexButtons(complex) : null}
+        </$ComplexName>
         {this.renderUnits(complex)}
       </$Complex>
     ));
@@ -42,7 +45,14 @@ class WorkoutSection extends Component {
   render() {
     return (
       <$Section>
-        <$SectionName>{this.props.section.name}</$SectionName>
+        <$SectionName>
+          <input
+            value={this.props.section.name}
+            disabled={!this.props.editable}
+            onChange={this.props.changeName}
+          />
+          {this.props.sectionButtons ? this.props.sectionButtons() : null}
+        </$SectionName>
         {this.renderComplexes()}
       </$Section>
     );
@@ -55,21 +65,45 @@ const $Section = styled.div`
   flex-grow: 1;
   padding-bottom: 25px;
   padding: 1rem;
+  min-height: 10rem;
 `;
 
-const $SectionName = styled.h3`
+const $SectionName = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
   color: ${colors.headers};
+  input {
+    height: 28px;
+    font-size: 28px;
+    font-family: "Teko", sans-serif;
+    background: transparent;
+    border: none;
+    font-weight: 300;
+    letter-spacing: 0.2px;
+    padding: 0;
+    color: inherit;
+    outline: none;
+    line-height: 1;
+  }
 `;
 
 const $Complex = styled.div`
   display: flex;
   flex-direction: column;
+  
 `;
 
 const $ComplexName = styled.h5`
   color: ${colors.headers};
   margin: 0 0 4px 0;
   font-size: 20px;
+  display: flex;
+  justify-content: space-between;
+  button {
+    color: white;
+  }
 `;
 
 const $Unit = styled.div`
@@ -81,14 +115,11 @@ const $Unit = styled.div`
   align-items: flex-start;
 `;
 
-const $UnitHeader = styled.div`
+const $UnitName = styled.p`
+  margin: 0;
   display: flex;
   justify-content: space-between;
   width: 100%;
-`;
-
-const $UnitName = styled.p`
-  margin: 0;
 `;
 
 const $UnitDetail = styled.li`

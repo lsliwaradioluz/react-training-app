@@ -19,7 +19,7 @@ class WorkoutList extends Component {
     let view = (
       <Fragment>
         {filteredWorkouts.map((workout) => (
-          <WorkoutTab workout={workout} key={workout.id} />
+          <WorkoutTab workout={workout} key={workout.id} onWorkoutDelete={this.props.onWorkoutDelete} />
         ))}
       </Fragment>
     )

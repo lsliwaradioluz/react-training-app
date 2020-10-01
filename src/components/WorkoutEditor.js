@@ -6,6 +6,7 @@ import {
   Fragment,
   cloneDeep,
   connect,
+  styled,
 } from "src/imports/react";
 import {
   Placeholder,
@@ -13,6 +14,7 @@ import {
   Carousel,
   Icon,
   ContextMenu,
+  Modal,
 } from "src/imports/components";
 import Layout from "src/layouts/Login";
 import Subheader from "src/components/WorkoutEditor/Subheader";
@@ -21,15 +23,21 @@ import DatePicker from "src/components/WorkoutEditor/DatePicker";
 import Header from "src/components/WorkoutEditor/Header";
 import PreviousWorkouts from "src/components/WorkoutEditor/PreviousWorkouts";
 import Buttons from "src/components/WorkoutEditor/Buttons";
-import { GET_USER } from "src/imports/apollo";
+import UnitEditor from "src/components/WorkoutEditor/UnitEditor";
+import { GET_USER, GET_FAMILIES } from "src/imports/apollo";
 import { setNotification } from "src/store/actions";
 
 class WorkoutEditor extends Component {
   constructor(props) {
     super(props);
+    this.families = null;
     this.state = {
+      dragging: false,
       user: null,
       currentSection: 0,
+      clipboard: null,
+      editedUnit: null,
+      editedUnitCoordinates: null,
       workoutData: {
         selectedDate: new Date().toISOString().split("T")[0],
         selectedTime: "18:00:00",
@@ -43,16 +51,21 @@ class WorkoutEditor extends Component {
         ],
       },
     };
-    this.clipboard = null;
   }
 
   async componentDidMount() {
-    const { data } = await apolloClient.query({
+    const { data: userData } = await apolloClient.query({
       query: GET_USER,
       variables: { id: this.props.match.params.id },
     });
 
-    this.setState({ user: data.user });
+    const { data: familiesData } = await apolloClient.query({
+      query: GET_FAMILIES,
+      variables: { userId: this.props.user.id },
+    });
+
+    this.families = familiesData.families;
+    this.setState({ user: userData.user });
   }
 
   changeWorkoutData = (key, event) => {
@@ -62,12 +75,36 @@ class WorkoutEditor extends Component {
     }));
   };
 
+  setEditedUnit = (unit, coordinates) => {
+    this.setState({
+      editedUnit: unit,
+      editedUnitCoordinates: coordinates,
+    });
+  };
+
+  editUnit = (unit) => {
+    const {
+      sectionIndex,
+      complexIndex,
+      unitIndex,
+    } = this.state.editedUnitCoordinates;
+    this.setState((state) => {
+      const workoutData = cloneDeep(state.workoutData);
+      workoutData.sections[sectionIndex].complexes[complexIndex].units[
+        unitIndex
+      ] = unit;
+      return { workoutData };
+    });
+  };
+
   copyToClipboard = (type, content) => {
     const copiedContent = cloneDeep(content);
-    this.clipboard = {
-      type,
-      content: copiedContent,
-    };
+    this.setState({
+      clipboard: {
+        type,
+        content: copiedContent,
+      },
+    });
     this.props.setNotification("Element skopiowany do schowka!");
   };
 
@@ -116,40 +153,168 @@ class WorkoutEditor extends Component {
     });
   };
 
+  pasteIntoSection = (sectionIndex) => {
+    const type = this.state.clipboard.type;
+    this.setState((state) => {
+      const workoutData = cloneDeep(state.workoutData);
+      let dataToPaste;
+      if (type === "section") {
+        dataToPaste = [...state.clipboard.content.complexes];
+      } else if (type === "complex") {
+        dataToPaste = [state.clipboard.content];
+      } else {
+        dataToPaste = [{ name: "Blok", units: [state.clipboard.content] }];
+      }
+      workoutData.sections[sectionIndex].complexes.push(...dataToPaste);
+      return { workoutData };
+    });
+  };
+
+  renderSectionButtons = (sectionIndex) => {
+    const sections = this.state.workoutData.sections;
+    const section = sections[sectionIndex];
+    const sectionButtons = [];
+    if (section.complexes.length > 0) {
+      sectionButtons.push({
+        caption: "Kopiuj",
+        icon: "pencil",
+        callback: this.copyToClipboard.bind(this, "section", section),
+      });
+    }
+
+    if (sectionIndex > 0) {
+      sectionButtons.push({
+        caption: "Przesuń w lewo",
+        icon: "left-arrow-1",
+        callback: this.moveSection.bind(this, sectionIndex, section, -1),
+      });
+    }
+
+    if (sectionIndex < sections.length - 1) {
+      sectionButtons.push({
+        caption: "Przesuń w prawo",
+        icon: "right-arrow-1",
+        callback: this.moveSection.bind(this, sectionIndex, section, 1),
+      });
+    }
+
+    if (this.state.clipboard) {
+      sectionButtons.unshift({
+        caption: "Wklej",
+        icon: "copy",
+        callback: this.pasteIntoSection.bind(this, sectionIndex),
+      });
+    }
+
+    if (sections.length > 1) {
+      sectionButtons.push({
+        caption: "Usuń",
+        icon: "trash",
+        callback: this.deleteSection.bind(this, sectionIndex),
+      });
+    }
+
+    return (
+      <$SectionButtons>
+        <button type="button" onClick={this.setEditedUnit.bind(this, {})}>
+          <Icon name="plus" />
+        </button>
+        <ContextMenu buttons={sectionButtons} />
+      </$SectionButtons>
+    );
+  };
+
+  pasteIntoComplex = (sectionIndex, complexIndex) => {
+    const type = this.state.clipboard.type;
+    this.setState((state) => {
+      const workoutData = cloneDeep(state.workoutData);
+      let dataToPaste;
+      if (type === "complex") {
+        dataToPaste = [...state.clipboard.content.units];
+      } else {
+        dataToPaste = [state.clipboard.content];
+      }
+      workoutData.sections[sectionIndex].complexes[complexIndex].units.push(
+        ...dataToPaste
+      );
+      return { workoutData };
+    });
+  };
+
+  renderComplexButtons = (sectionIndex, complexIndex, complex) => {
+    const complexButtons = [
+      {
+        caption: "Kopiuj",
+        icon: "copy",
+        callback: this.copyToClipboard.bind(this, "complex", complex),
+      },
+    ];
+
+    if (this.state.clipboard && this.state.clipboard.type !== "section") {
+      complexButtons.unshift({
+        caption: "Wklej",
+        icon: "pencil",
+        callback: this.pasteIntoComplex.bind(this, sectionIndex, complexIndex),
+      });
+    }
+
+    return <ContextMenu buttons={complexButtons} />;
+  };
+
+  renderUnitButtons = (sectionIndex, complexIndex, unitIndex, unit) => {
+    const units = this.state.workoutData.sections[sectionIndex].complexes[
+      complexIndex
+    ].units;
+    const unitButtons = [
+      {
+        caption: "Kopiuj",
+        icon: "copy",
+        callback: this.copyToClipboard.bind(this, "unit", unit),
+      },
+      {
+        caption: "Edytuj",
+        icon: "pencil",
+        callback: this.setEditedUnit.bind(this, unit, {
+          sectionIndex,
+          complexIndex,
+          unitIndex,
+        }),
+      },
+    ];
+    return <ContextMenu buttons={unitButtons} />;
+  };
+
+  moveUnit = (sectionIndex, value) => {
+    this.setState((state) => {
+      const workoutData = cloneDeep(state.workoutData);
+      workoutData.sections[sectionIndex] = value;
+      return { workoutData, dragging: false };
+    });
+  };
+
   renderSections = () => {
     const sections = this.state.workoutData.sections;
-    const sectionNodes = sections.map((section, index) => {
-      const sectionButtons = [];
-      if (sections.length > 1) {
-        sectionButtons.push({
-          caption: "Usuń",
-          icon: "trash",
-          callback: this.deleteSection.bind(this, index),
-        });
-      }
-      if (index > 0) {
-        sectionButtons.push({
-          caption: "Przesuń w lewo",
-          icon: "left-arrow-1",
-          callback: this.moveSection.bind(this, index, section, -1),
-        });
-      }
-
-      if (index < sections.length - 1) {
-        sectionButtons.push({
-          caption: "Przesuń w prawo",
-          icon: "right-arrow-1",
-          callback: this.moveSection.bind(this, index, section, 1),
-        });
-      }
-
+    const sectionNodes = sections.map((section, sectionIndex) => {
       return (
         <WorkoutSection
           section={section}
-          changeName={this.changeSectionName.bind(this, index)}
-          sectionButtons={() => <ContextMenu buttons={sectionButtons} />}
-          key={index}
+          changeName={this.changeSectionName.bind(this, sectionIndex)}
+          sectionButtons={() => this.renderSectionButtons(sectionIndex)}
+          complexButtons={(complex, complexIndex) =>
+            this.renderComplexButtons(sectionIndex, complexIndex, complex)
+          }
+          unitButtons={(unit, unitIndex, complexIndex) =>
+            this.renderUnitButtons(sectionIndex, complexIndex, unitIndex, unit)
+          }
+          key={sectionIndex}
           editable
+          onDragging={() => {
+            this.setState({ dragging: true });
+          }}
+          onDragFail={() => {
+            this.setState({ dragging: false });
+          }}
+          onDragEnd={this.moveUnit.bind(this, sectionIndex)}
         />
       );
     });
@@ -163,6 +328,7 @@ class WorkoutEditor extends Component {
         </Subheader>
         <CarouselContainer>
           <Carousel
+            inactive={this.state.dragging}
             index={this.state.currentSection}
             key={this.state.workoutData.sections.length}
           >
@@ -171,6 +337,24 @@ class WorkoutEditor extends Component {
         </CarouselContainer>
       </Fragment>
     );
+  };
+
+  renderUnitEditor = () => {
+    if (this.state.editedUnit) {
+      return (
+        <Modal>
+          <UnitEditor
+            unit={this.state.editedUnit}
+            families={this.families}
+            create={this.copyToClipboard.bind(this, "unit")}
+            update={this.editUnit}
+            close={this.setEditedUnit.bind(this, null)}
+          />
+        </Modal>
+      );
+    } else {
+      return null;
+    }
   };
 
   render() {
@@ -185,11 +369,16 @@ class WorkoutEditor extends Component {
             change={this.changeWorkoutData}
           />
           {this.renderSections()}
+          {this.renderUnitEditor()}
           <PreviousWorkouts
             workouts={this.state.user.workouts}
             copy={this.copyToClipboard}
           />
-          <Buttons goBack={this.props.history.goBack} />
+          <Buttons
+            goBack={this.props.history.goBack}
+            workout={this.state.workoutData}
+            userId={this.state.user.id}
+          />
         </Fragment>
       );
     }
@@ -197,10 +386,23 @@ class WorkoutEditor extends Component {
   }
 }
 
+const $SectionButtons = styled.div`
+  display: flex;
+`;
+
+const mapStateToProps = (state) => {
+  return {
+    user: state.user,
+  };
+};
+
 const mapDispatchToProps = (dispatch) => {
   return {
     setNotification: (notification) => dispatch(setNotification(notification)),
   };
 };
 
-export default connect(null, mapDispatchToProps)(withRouter(WorkoutEditor));
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withRouter(WorkoutEditor));

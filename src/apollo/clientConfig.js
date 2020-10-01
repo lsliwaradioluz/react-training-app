@@ -7,6 +7,9 @@ import {
   concat
 } from "@apollo/client";
 
+const token = Cookies.get("piti-token");
+const pathname = window.location.pathname
+
 const httpLink = createHttpLink({
   uri:
     process.env.NODE_ENV === "development"
@@ -17,7 +20,8 @@ const httpLink = createHttpLink({
 const authMiddleware = new ApolloLink((operation, forward) => {
   operation.setContext({
     headers: {
-      authorization: `Bearer ${Cookies.get("piti-token")}` || null
+      authorization: token ? `Bearer ${token}` : null,
+      login: pathname === "/login" ? true : false,
     }
   })
 

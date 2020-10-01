@@ -53,6 +53,7 @@ class Login extends Component {
         this.props.history.push("/dashboard");
       })
       .catch((err) => {
+        console.log(err)
         let message
         if (err.message === "User was not found") {
           message = "Nie znaleziono takiego użytkownika!"

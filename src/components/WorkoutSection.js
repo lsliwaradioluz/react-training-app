@@ -1,6 +1,21 @@
 import { React, Component, Fragment, styled, colors } from "src/imports/react";
+import Draggable from "src/components/Draggable";
 
 class WorkoutSection extends Component {
+  sectionToModify = this.props.section;
+
+  modifySection = (complexIndex, value) => {
+    if (complexIndex !== undefined && complexIndex !== null) {
+      this.sectionToModify.complexes[complexIndex].units = value;
+    } else {
+      this.sectionToModify.complexes = value;
+    }
+
+    if (this.props.onDragEnd) {
+      this.props.onDragEnd(this.sectionToModify);
+    }
+  };
+
   generateSetsAndReps = (unit) => {
     let setsAndReps = unit.sets;
     if (unit.reps) setsAndReps += `x${unit.reps}`;
@@ -9,13 +24,15 @@ class WorkoutSection extends Component {
     return setsAndReps;
   };
 
-  renderUnits = (complex) => {
-    const units = complex.units.map((unit) => (
-      <$Unit key={unit.id}>
-        <$UnitName>
-          {unit.exercise.name}
-          {this.props.unitButtons ? this.props.unitButtons(unit) : null}
-        </$UnitName>
+  renderUnits = (complex, complexIndex) => {
+    const units = complex.units.map((unit, unitIndex) => (
+      <$Unit key={`${unit.id}${unitIndex}`}>
+        <$UnitHeader>
+          <$UnitName>{unit.exercise.name}</$UnitName>
+          {this.props.unitButtons
+            ? this.props.unitButtons(unit, unitIndex, complexIndex)
+            : null}
+        </$UnitHeader>
         <ul>
           <$UnitDetail>{this.generateSetsAndReps(unit)}</$UnitDetail>
           <$UnitDetail>{unit.remarks}</$UnitDetail>
@@ -25,24 +42,66 @@ class WorkoutSection extends Component {
       </$Unit>
     ));
 
-    return <Fragment>{units}</Fragment>;
+    return (
+      <Fragment>
+        {this.props.onDragEnd ? (
+          <Draggable
+            button="flaticon-vertical-dots"
+            value={this.sectionToModify.complexes[complexIndex].units}
+            onDragging={this.props.onDragging}
+            onDragFail={this.props.onDragFail}
+            onInput={this.modifySection.bind(this, complexIndex)}
+          >
+            {units}
+          </Draggable>
+        ) : (
+          units
+        )}
+      </Fragment>
+    );
   };
 
   renderComplexes = () => {
-    const complexes = this.props.section.complexes.map((complex) => (
-      <$Complex key={complex.id}>
-        <$ComplexName>
-          {complex.name}{" "}
-          {this.props.complexButtons ? this.props.complexButtons(complex) : null}
-        </$ComplexName>
-        {this.renderUnits(complex)}
-      </$Complex>
-    ));
+    const complexes = this.props.section.complexes.map(
+      (complex, complexIndex) => (
+        <$Complex key={`${complex.id}${complexIndex}`}>
+          <$ComplexHeader>
+            <$ComplexName>{complex.name} </$ComplexName>
+            {this.props.complexButtons
+              ? this.props.complexButtons(complex, complexIndex)
+              : null}
+          </$ComplexHeader>
+          {this.renderUnits(complex, complexIndex)}
+        </$Complex>
+      )
+    );
 
-    return <Fragment>{complexes}</Fragment>;
+    if (complexes.length > 0) {
+      return (
+        <Fragment>
+          {this.props.onDragEnd ? (
+            <Draggable
+              button="flaticon-vertical-dots"
+              value={this.sectionToModify.complexes}
+              onDragging={this.props.onDragging}
+              onDragFail={this.props.onDragFail}
+              onInput={this.modifySection.bind(this, null)}
+            >
+              {complexes}
+            </Draggable>
+          ) : (
+            complexes
+          )}
+        </Fragment>
+      )
+    } else {
+      return <$Placeholder>W tej sekcji nie ma żadnych ćwiczeń. Dodaj pierwsze, dotykając ikony +</$Placeholder>
+    }
+
   };
 
   render() {
+    this.sectionToModify = this.props.section;
     return (
       <$Section>
         <$SectionName>
@@ -65,6 +124,7 @@ const $Section = styled.div`
   flex-grow: 1;
   padding-bottom: 25px;
   padding: 1rem;
+  padding-bottom: 3rem;
   min-height: 10rem;
 `;
 
@@ -92,18 +152,18 @@ const $SectionName = styled.div`
 const $Complex = styled.div`
   display: flex;
   flex-direction: column;
-  
+`;
+
+const $ComplexHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 4px 0;
 `;
 
 const $ComplexName = styled.h5`
   color: ${colors.headers};
-  margin: 0 0 4px 0;
   font-size: 20px;
-  display: flex;
-  justify-content: space-between;
-  button {
-    color: white;
-  }
+  margin: 0;
 `;
 
 const $Unit = styled.div`
@@ -115,11 +175,14 @@ const $Unit = styled.div`
   align-items: flex-start;
 `;
 
-const $UnitName = styled.p`
-  margin: 0;
+const $UnitHeader = styled.div`
   display: flex;
   justify-content: space-between;
   width: 100%;
+`;
+
+const $UnitName = styled.p`
+  margin: 0;
 `;
 
 const $UnitDetail = styled.li`
@@ -135,5 +198,9 @@ const $UnitRest = styled($UnitDetail)`
 const $UnitFeedback = styled($UnitDetail)`
   color: #5c946e;
 `;
+
+const $Placeholder = styled.p`
+  color: ${colors.faded};
+`
 
 export default WorkoutSection;

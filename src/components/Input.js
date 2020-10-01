@@ -1,9 +1,20 @@
 import { React, colors, styled } from "src/imports/react";
-import { Icon as icon } from "src/imports/components";
+import { Icon } from "src/imports/components";
 
 const Input = (props) => {
   let label = null;
   let icon = null;
+  let deleteButton = null;
+
+  const inputRef = React.createRef();
+
+  const clearInput = () => {
+    inputRef.current.value = "";
+    const event = {
+      target: inputRef.current
+    }
+    props.onChange(event)
+  };
 
   if (props.value && props.value.length > 0 && !props.hideLabel) {
     label = <$Label>{props.placeholder}</$Label>;
@@ -11,12 +22,21 @@ const Input = (props) => {
   if (props.search) {
     icon = <$Icon name="search" color={colors.faded} />;
   }
+  if (props.showDeleteButton) {
+    deleteButton = (
+      <$DeleteButton type="button" onClick={clearInput}>
+        <Icon name="cancel" />
+      </$DeleteButton>
+    );
+  }
 
   return (
     <$InputContainer className={props.className}>
       {label}
       {icon}
+      {deleteButton}
       <$Input
+        ref={inputRef}
         disabled={props.disabled}
         placeholder={props.placeholder}
         type={props.type}
@@ -43,7 +63,7 @@ const $Label = styled.label`
   color: ${colors.faded};
 `;
 
-const $Icon = styled(icon)`
+const $Icon = styled(Icon)`
   position: absolute;
   bottom: 7px;
   color: ${colors.faded};
@@ -89,6 +109,15 @@ const $Input = styled.input`
   &:disabled {
     opacity: 0.3;
   }
+`;
+
+const $DeleteButton = styled.button`
+  position: absolute;
+  right: 0;
+  font-size: 8px;
+  bottom: 7px;
+  right: 4px;
+  margin-left: 4px;
 `;
 
 export default Input;

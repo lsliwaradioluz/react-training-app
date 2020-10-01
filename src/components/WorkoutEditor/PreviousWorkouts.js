@@ -1,10 +1,5 @@
 import { React, Component, styled, filters, Fragment } from "src/imports/react";
-import {
-  Carousel,
-  CarouselContainer,
-  ContextMenu,
-  Icon,
-} from "src/imports/components";
+import { Carousel, CarouselContainer, Icon } from "src/imports/components";
 import Subheader from "src/components/WorkoutEditor/Subheader";
 import WorkoutSection from "src/components/WorkoutSection";
 
@@ -43,7 +38,7 @@ class PreviousWorkouts extends Component {
         complexButtons={(complex) => (
           <button
             type="button"
-            onClick={this.props.copy.bind(this, "section", complex)}
+            onClick={this.props.copy.bind(this, "complex", complex)}
           >
             <Icon name="plus" />
           </button>

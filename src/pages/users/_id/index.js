@@ -9,12 +9,16 @@ class UserPage extends Component {
     user: null,
   };
 
-  async componentDidMount() {
+  getUser = async () => {
     const { data } = await apolloClient.query({
       query: GET_USER,
       variables: { id: this.props.match.params.id },
     });
     this.setState({ user: data.user });
+  } 
+
+  componentDidMount() {
+    this.getUser()
   }
 
   render() {
@@ -39,7 +43,7 @@ class UserPage extends Component {
               <$Icon name="plus" />
             </NavLink>
           </$Subheader>
-          <WorkoutList workouts={this.state.user.workouts} />
+          <WorkoutList workouts={this.state.user.workouts} onWorkoutDelete={this.getUser} />
         </DefaultLayout>
       );
     }

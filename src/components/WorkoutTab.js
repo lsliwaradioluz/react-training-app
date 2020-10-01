@@ -5,18 +5,50 @@ import {
   colors,
   NavLink,
   connect,
+  apolloClient,
+  cloneDeep,
+  withRouter,
 } from "src/imports/react";
+import { DELETE_WORKOUT, GET_USER } from "src/imports/apollo";
 import { Icon, ContextMenu } from "src/imports/components";
 
 const WorkoutTab = (props) => {
-  const deleteWorkout = () => {
-
-  }
+  const deleteWorkout = async () => {
+    await apolloClient.mutate({
+      mutation: DELETE_WORKOUT,
+      variables: { id: props.workout.id },
+      update: (cache, { data: { deleteWorkout } }) => {
+        try {
+          const data = cloneDeep(
+            cache.readQuery({
+              query: GET_USER,
+              variables: { id: props.match.params.id },
+            })
+          );
+          data.user.workouts = data.user.workouts.filter(
+            (workout) => workout.id !== deleteWorkout.id
+          );
+          apolloClient.writeQuery({
+            query: GET_USER,
+            variables: { id: props.match.params.id },
+            data,
+          });
+        } catch (err) {
+          console.log(err);
+        }
+      },
+    });
+    props.onWorkoutDelete()
+  };
 
   const renderContextMenu = () => {
     if (props.user.admin) {
       return (
-        <$ContextMenu buttons={[{ caption: "Usuń", icon: "trash", callback: deleteWorkout }]} />
+        <$ContextMenu
+          buttons={[
+            { caption: "Usuń", icon: "trash", callback: deleteWorkout },
+          ]}
+        />
       );
     } else {
       return <$Icon name="right-arrow" active={props.workout.ready} />;
@@ -45,8 +77,8 @@ const $WorkoutTab = styled.div`
 `;
 
 const $WorkoutData = styled(NavLink)`
-
-`
+  width: 100%;
+`;
 
 const $Date = styled.h4`
   margin-bottom: 0;
@@ -73,4 +105,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(WorkoutTab);
+export default connect(mapStateToProps)(withRouter(WorkoutTab));

@@ -2,7 +2,6 @@ import {
   React,
   styled,
   Component,
-  keyframes,
   css,
   connect,
   NavLink,
@@ -86,13 +85,13 @@ class ContextMenu extends Component {
 }
 
 const $ContextMenu = styled.div`
-  margin-left: 1rem;
+  margin-left: .5rem;
   display: flex;
   position: relative;
 `;
 
 const $Icon = styled(Icon)`
-  font-size: 18px;
+  font-size: inherit;
 `;
 
 const $Buttons = styled.div`
@@ -102,6 +101,8 @@ const $Buttons = styled.div`
   right: 20px;
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.233);
   z-index: 1000;
+  display: flex;
+  flex-direction: column;
 `;
 
 const buttonStyles = css`

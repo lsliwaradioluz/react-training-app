@@ -31,8 +31,6 @@ const UserTab = (props) => {
       .catch((err) => console.log(err));
   };
 
-  const transferUser = () => {};
-
   const deleteUser = async () => {
     try {
       await apolloClient.mutate({

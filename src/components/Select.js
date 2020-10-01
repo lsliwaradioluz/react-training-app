@@ -4,8 +4,7 @@ import { Icon as icon } from "src/imports/components";
 const Input = (props) => {
   let label = null;
   let icon = null;
-
-  if (props.value && props.value.length > 0 && !props.hideLabel) {
+  if (props.value && !props.hideLabel) {
     label = <$Label>{props.placeholder}</$Label>;
   }
   if (props.search) {
@@ -13,29 +12,28 @@ const Input = (props) => {
   }
 
   const renderOptions = () => {
-    return props.options.map((option) => (
-      <$Option key={option.value} value={option.value}>
+    const options = props.options.map((option, index) => (
+      <$Option key={index} value={option.value}>
         {option.name}
       </$Option>
     ));
+    if (!props.value) {
+      options.unshift(<$EmptyOption key="blank-option" />);
+    }
+    return options;
   };
 
   return (
     <$SelectContainer>
       {label}
       {icon}
-      <$Select
-        placeholder={props.placeholder}
-        onChange={props.onChange}
-        value={props.value}
-      >
+      {props.value ? null : <$Placeholder>{props.placeholder}</$Placeholder>}
+      <$Select onChange={props.onChange} value={props.value}>
         {renderOptions()}
       </$Select>
     </$SelectContainer>
   );
 };
-
-// Style
 
 const $SelectContainer = styled.div`
   position: relative;
@@ -94,14 +92,26 @@ const $Select = styled.select`
   }
 `;
 
+const $Placeholder = styled.p`
+  position: absolute;
+  left: 0;
+  bottom: 4px;
+  margin: 0;
+  color: ${colors.faded};
+`;
+
 const $Option = styled.option`
   color: white;
   border: none;
   background-color: ${colors.secondary};
-  padding-left: .5rem;
+  padding-left: 0.5rem;
   &:disabled {
     color: ${colors.faded};
   }
-`
+`;
+
+const $EmptyOption = styled.option`
+  display: none;
+`;
 
 export default Input;

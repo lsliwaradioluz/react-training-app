@@ -115,7 +115,6 @@ class WorkoutPage extends Component {
       <CarouselContainer>
         <Carousel>
           {sections}
-          {sections}
         </Carousel>
       </CarouselContainer>
     );

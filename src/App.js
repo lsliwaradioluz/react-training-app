@@ -26,7 +26,7 @@ import UserPage from "src/pages/users/_id/index"
 import SettingsPage from "src/pages/settings/index"
 import ChangePasswordPage from "src/pages/settings/change-password/index"
 import WorkoutAssistantPage from "src/pages/workouts/_id/assistant/index"
-import NewWorkoutPage from './pages/users/new'
+import NewWorkoutPage from './pages/users/new-workout/index'
 
 const App = (props) => {
   return (

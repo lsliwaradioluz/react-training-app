@@ -81,10 +81,11 @@ class Carousel extends Component {
       <$Carousel>
         <$Indicators>{this.renderIndicators()}</$Indicators>
         <$Slider
+          inactive={this.props.inactive}
           ref={this.wrapperRef}
-          onTouchStart={this.onTouchStartHandler}
-          onTouchMove={this.onTouchMoveHandler}
-          onTouchEnd={this.onTouchEndHandler}
+          onTouchStart={this.props.inactive ? null : this.onTouchStartHandler}
+          onTouchMove={this.props.inactive ? null : this.onTouchMoveHandler}
+          onTouchEnd={this.props.inactive ? null : this.onTouchEndHandler}
         >
           {this.props.children}
         </$Slider>
@@ -103,8 +104,7 @@ const $Carousel = styled.div`
 `;
 
 const $Slider = styled.div`
-  overflow-x: scroll;
-  overflow-y: hidden;
+  overflow-x: ${props => props.inactive ? "hidden" : "scroll"};
   display: flex;
   scroll-behavior: smooth;
   > * {

@@ -12,7 +12,7 @@ import WorkoutList from "src/components/WorkoutList"
 
 class WorkoutsPage extends Component {
   state = {
-    workouts: null,
+    user: null,
   };
 
   async componentDidMount() {
@@ -20,7 +20,7 @@ class WorkoutsPage extends Component {
       query: GET_USER,
       variables: { id: this.props.userID },
     });
-    this.setState({ workouts: data.user.workouts });
+    this.setState({ user: data.user });
   }
 
   render() {
@@ -30,7 +30,7 @@ class WorkoutsPage extends Component {
       </DefaultLayout>
     )
 
-    if (this.state.workouts) {
+    if (this.state.user) {
       view = (
         <DefaultLayout>
           <Header>Twoje treningi</Header>
@@ -39,7 +39,7 @@ class WorkoutsPage extends Component {
             wśród nich zarówno regularne treningi, jak i zadania domowe do
             wykonywania w dni nietreningowe lub zgodnie z zaleceniami trenera.
           </$Caption>
-          <WorkoutList workouts={this.state.workouts} />          
+          <WorkoutList user={this.state.user} />          
         </DefaultLayout>
       )
     }

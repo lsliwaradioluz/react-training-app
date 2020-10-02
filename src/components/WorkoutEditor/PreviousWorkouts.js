@@ -54,14 +54,20 @@ class PreviousWorkouts extends Component {
       />
     ));
 
-    const previousWorkoutDate = `${filters.getDayName(
-      previousWorkout.scheduled
-    )} ${filters.getDayAndMonth(previousWorkout.scheduled)}`;
+    let previousWorkoutHeader
+
+    if (previousWorkout.user) {
+      previousWorkoutHeader = `Treningu użytkownika ${previousWorkout.user.username}`
+    } else {
+      previousWorkoutHeader = `${filters.getDayName(
+        previousWorkout.scheduled
+      )} ${filters.getDayAndMonth(previousWorkout.scheduled)}`;
+    }
 
     return (
       <Fragment>
         <Subheader>
-          {previousWorkoutDate}
+          {previousWorkoutHeader}
           <$PreviousWorkoutsNav>
             <$PreviousWorkoutsButton
               type="button"

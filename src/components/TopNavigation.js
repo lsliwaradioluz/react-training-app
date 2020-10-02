@@ -1,44 +1,109 @@
-import { React, styled, colors, withRouter } from "src/imports/react";
-import { Icon } from "src/imports/components"
+import {
+  React,
+  Component,
+  styled,
+  colors,
+  withRouter,
+  connect,
+  css,
+} from "src/imports/react";
+import { Icon, Modal } from "src/imports/components";
+import CopyPair from "src/components/CopyPair";
 
-const Navigation = (props) => {
-  const reloadPage = () => {
-    window.location.reload()
+class topNavigation extends Component {
+  state = {
+    showCopyPair: false,
+  };
+
+  toggleShowCopyPair = () => {
+    this.setState((state) => ({
+      showCopyPair: !state.showCopyPair,
+    }));
+  };
+
+  reloadPage = () => {
+    window.location.reload();
+  };
+
+  goBack = () => {
+    this.props.history.goBack();
+  };
+
+  renderCopyPair = () => {
+    if (
+      (this.state.showCopyPair && this.props.workoutToPair) ||
+      (this.state.showCopyPair && this.props.workoutToCopy)
+    ) {
+      return (
+        <Modal onClick={this.toggleShowCopyPair}>
+          <CopyPair />
+        </Modal>
+      );
+    } else {
+      return null;
+    }
+  };
+
+  render() {
+    return (
+      <nav>
+        <$TopNavigation color={this.props.color}>
+          <$Link onClick={this.goBack}>
+            <Icon name="left-arrow-2" />
+          </$Link>
+          <$Container>
+            <$Link onClick={this.reloadPage}>
+              <Icon name="continuous" />
+            </$Link>
+            {(this.props.workoutToPair &&
+              this.props.location.pathname.includes("users")) ||
+            (this.props.workoutToCopy &&
+              this.props.location.pathname.includes("users")) ? (
+              <$Link bell onClick={this.toggleShowCopyPair}>
+                <Icon name="bell" />
+              </$Link>
+            ) : null}
+            {this.renderCopyPair()}
+          </$Container>
+        </$TopNavigation>
+      </nav>
+    );
   }
-
-  const goBack = () => {
-    props.history.goBack()
-  }
-
-  return (
-    <nav>
-      <TopLinks color={props.color}>
-        <TopLink onClick={goBack}>
-          <Icon name="left-arrow-2" />
-        </TopLink>
-        <TopLink onClick={reloadPage}>
-          <Icon name="continuous" />
-        </TopLink>
-      </TopLinks>
-    </nav>
-  );
-};
+}
 
 // Styles
-const TopLinks = styled.ul`
+const $TopNavigation = styled.ul`
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 2;
+  z-index: 1002;
   width: 100%;
   padding: 1rem;
   display: flex;
   justify-content: space-between;
-  color: ${props => props.color ? props.color : colors.faded};
+  color: ${(props) => (props.color ? props.color : colors.faded)};
 `;
 
-const TopLink = styled.li`
+const bellStyles = css`
+  color: ${colors.headers};
+  margin-left: 5px;
+  z-index: 1005;
+`;
+
+const $Link = styled.li`
   color: inherit;
+  ${(props) => (props.bell ? bellStyles : null)}
 `;
 
-export default withRouter(Navigation);
+const $Container = styled.div`
+  display: flex;
+`;
+
+const mapStateToProps = (state) => {
+  return {
+    workoutToPair: state.workoutToPair,
+    workoutToCopy: state.workoutToCopy,
+  };
+};
+
+export default connect(mapStateToProps)(withRouter(topNavigation));

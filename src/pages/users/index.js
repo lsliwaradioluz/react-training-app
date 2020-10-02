@@ -54,16 +54,14 @@ class Users extends Component {
 
   renderUserTabs = () => {
     let filteredUsers = this.state.users.filter((user) => {
-      return (
-        (user.fullname
-          .toLowerCase()
-          .includes(this.state.filter.toLowerCase().trim()) &&
-          user.active === this.state.showActive) ||
-        (user.username
-          .toLowerCase()
-          .includes(this.state.filter.toLowerCase().trim()) &&
-          user.active === this.state.showActive)
-      );
+      const fitsActive = user.active === this.state.showActive;
+      const fitsFilter = `${user.fullname}${user.username}`
+        .toLowerCase()
+        .includes(this.state.filter.toLowerCase().trim());
+      const isCopiedOrPaired =
+        this.props.workoutToCopy && user.username === this.props.workoutToCopy.user.username ||
+        this.props.workoutToPair && user.username === this.props.workoutToPair.user.username;
+      return fitsActive && fitsFilter && !isCopiedOrPaired
     });
 
     let userTabs = <p>Brak podopiecznych spełniających podane kryteria</p>;
@@ -109,7 +107,7 @@ class Users extends Component {
           </Header>
           <$Caption>
             Dotknij karty podopiecznego, by zobaczyć jego treningi. Jeżeli
-            skończyliście współpracę, przenieś go do archiwum. 
+            skończyliście współpracę, przenieś go do archiwum.
           </$Caption>
           <$Buttons>
             <Button
@@ -162,6 +160,8 @@ const $Buttons = styled.div`
 const mapStateToProps = (state) => {
   return {
     userID: state.user.id,
+    workoutToPair: state.workoutToPair,
+    workoutToCopy: state.workoutToCopy,
   };
 };
 

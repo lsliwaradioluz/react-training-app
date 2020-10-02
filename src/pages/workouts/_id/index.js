@@ -22,16 +22,18 @@ import {
   Carousel,
 } from "src/imports/components";
 import prepareSectionsForMutation from "src/utils/removeTypename";
-import Stopwatch from "src/components/Stopwatch"
+import Stopwatch from "src/components/Stopwatch";
+import { addEntryToDB, setNotification } from "src/store/actions";
 
 class WorkoutPage extends Component {
   state = {
     mounted: false,
+    currentWorkout: 0,
     editingFeedback: false,
     showStopwatch: false,
   };
 
-  workout = null;
+  workouts = [];
   editedUnit = null;
 
   async componentDidMount() {
@@ -42,9 +44,18 @@ class WorkoutPage extends Component {
       },
     });
 
-    this.workout = cloneDeep(data.workout);
+    this.workouts.push(cloneDeep(data.workout));
+    if (this.props.workoutToPair) {
+      this.workouts.push(this.props.workoutToPair);
+    }
     this.setState({ mounted: true });
   }
+
+  toggleCurrentWorkout = () => {
+    this.setState((state) => ({
+      currentWorkout: state.currentWorkout === 0 ? 1 : 0,
+    }));
+  };
 
   setEditingFeedback = (payload) => {
     this.editedUnit = payload;
@@ -54,27 +65,33 @@ class WorkoutPage extends Component {
   editFeedback = async (newFeedback) => {
     this.editedUnit.feedback = newFeedback;
     try {
-      this.updateWorkout();
+      const { data } = await apolloClient.mutate({
+        mutation: UPDATE_WORKOUT,
+        variables: {
+          input: {
+            id: this.workouts[this.state.currentWorkout].id,
+            sections: prepareSectionsForMutation(
+              this.workouts[this.state.currentWorkout].sections
+            ),
+          },
+        },
+      });
+      if (this.props.workoutToPair.id === data.updateWorkout.id) {
+        this.props.addEntryToDB("workoutToPair", {
+          ...data.updateWorkout,
+          user: this.props.workoutToPair.user,
+        });
+      }
+      this.props.setNotification("Notatka zapisana!");
       this.setState({ editingFeedback: false });
     } catch (err) {
       console.log(err);
+      this.props.setNotification("Nie udało się zapisać notatki");
     }
   };
 
   toggleShowStopwatch = () => {
-    this.setState(state => ({ showStopwatch: !state.showStopwatch }))
-  }
-
-  updateWorkout = () => {
-    return apolloClient.mutate({
-      mutation: UPDATE_WORKOUT,
-      variables: {
-        input: {
-          id: this.workout.id,
-          sections: prepareSectionsForMutation(this.workout.sections),
-        },
-      },
-    });
+    this.setState((state) => ({ showStopwatch: !state.showStopwatch }));
   };
 
   renderUnitButtons = (unit) => {
@@ -104,7 +121,9 @@ class WorkoutPage extends Component {
   };
 
   renderSections = () => {
-    const sections = this.workout.sections.map((section) => (
+    const sections = this.workouts[
+      this.state.currentWorkout
+    ].sections.map((section) => (
       <WorkoutSection
         key={section.id}
         section={section}
@@ -113,9 +132,7 @@ class WorkoutPage extends Component {
     ));
     return (
       <CarouselContainer>
-        <Carousel>
-          {sections}
-        </Carousel>
+        <Carousel>{sections}</Carousel>
       </CarouselContainer>
     );
   };
@@ -148,9 +165,38 @@ class WorkoutPage extends Component {
     }
   };
 
-  render() {
-    const assistantLink = `${this.props.history.location.pathname}/assistant`;
+  renderHeader = () => {
+    let headerText = "Trening";
+    let switchButton = null;
+    if (this.workouts.length > 1) {
+      switchButton = (
+        <$SwitchButton onClick={this.toggleCurrentWorkout}>
+          {this.workouts[this.state.currentWorkout === 0 ? 1 : 0].user.username}
+        </$SwitchButton>
+      );
+    }
 
+    if (
+      (this.props.viewingUser.admin &&
+        this.workouts[this.state.currentWorkout].user.username !==
+          this.props.viewingUser.username) ||
+      this.props.workoutToPair
+    ) {
+      headerText = this.workouts[this.state.currentWorkout].user.username;
+    }
+
+    return (
+      <$HeaderWrapper>
+        {switchButton}
+        <Header>
+          {headerText}
+          <Date date={this.workouts[this.state.currentWorkout].scheduled} />
+        </Header>
+      </$HeaderWrapper>
+    );
+  };
+
+  render() {
     let view = (
       <DefaultLayout>
         <Placeholder />
@@ -160,10 +206,7 @@ class WorkoutPage extends Component {
     if (this.state.mounted) {
       view = (
         <DefaultLayout>
-          <Header>
-            Trening
-            <Date date={this.workout.scheduled} />
-          </Header>
+          {this.renderHeader()}
           <p>
             Zapoznaj się z rozpiską, przesuwając palcem w lewo lub w prawo.
             Skorzystaj z Cyfrowego Asystenta, który przeprowadzi Cię przez Twój
@@ -171,9 +214,28 @@ class WorkoutPage extends Component {
             wiedział, jak Ci poszło.
           </p>
           <$Buttons>
-            <$Button to={assistantLink} theme="tertiary">
-              Asystent
-            </$Button>
+            {this.workouts.length > 1 ? null : (
+              <$Button
+                to={`${this.props.history.location.pathname}/assistant`}
+                theme="tertiary"
+              >
+                Asystent
+              </$Button>
+            )}
+            {this.props.viewingUser.admin ? (
+              <$Button
+                to={{
+                  pathname: `${this.props.location.pathname}/edit`,
+                  state: {
+                    userID: this.workouts[this.state.currentWorkout].user.id,
+                  },
+                }}
+                theme="tertiary"
+                middle={this.workouts.length === 1}
+              >
+                Edytuj
+              </$Button>
+            ) : null}
             <$Button click={this.toggleShowStopwatch} theme="tertiary">
               Stoper
             </$Button>
@@ -188,14 +250,21 @@ class WorkoutPage extends Component {
   }
 }
 
+const $HeaderWrapper = styled.div``;
+
+const $SwitchButton = styled.button`
+  font-family: "Teko", sans-serif;
+  font-size: 15px;
+  letter-spacing: 0.4px;
+`;
+
 const $Buttons = styled.div`
   display: flex;
   justify-content: space-between;
-`
+`;
 
 const $Button = styled(Button)`
-  margin-top: 0;
-  margin-bottom: 2rem;
+  margin: ${(props) => (props.middle ? "0 6px 2rem 6px" : "0 0 2rem 0")};
   flex-basis: 49%;
 `;
 
@@ -205,8 +274,16 @@ const $ContextMenuTrigger = styled(Icon)`
 
 const mapStateToProps = (state) => {
   return {
-    userID: state.user.id,
+    viewingUser: state.user,
+    workoutToPair: state.workoutToPair,
   };
 };
 
-export default connect(mapStateToProps)(WorkoutPage);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setNotification: (notification) => dispatch(setNotification(notification)),
+    addEntryToDB: (key, entry) => dispatch(addEntryToDB(key, entry)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(WorkoutPage);

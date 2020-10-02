@@ -3,7 +3,7 @@ import { Input, Button } from "src/imports/components";
 
 class FeedbackEditor extends Component {
   state = {
-    feedback: this.props.unit.feedback,
+    feedback: this.props.unit.feedback || "",
   };
 
   editFeedback = (event) => {

@@ -22,15 +22,16 @@ import WorkoutSection from "src/components/WorkoutSection";
 import DatePicker from "src/components/WorkoutEditor/DatePicker";
 import Header from "src/components/WorkoutEditor/Header";
 import PreviousWorkouts from "src/components/WorkoutEditor/PreviousWorkouts";
-import Buttons from "src/components/WorkoutEditor/Buttons";
+import SaveButtons from "src/components/WorkoutEditor/SaveButtons";
 import UnitEditor from "src/components/WorkoutEditor/UnitEditor";
-import { GET_USER, GET_FAMILIES } from "src/imports/apollo";
+import { GET_USER, GET_WORKOUT, GET_FAMILIES } from "src/imports/apollo";
 import { setNotification } from "src/store/actions";
 
 class WorkoutEditor extends Component {
   constructor(props) {
     super(props);
     this.families = null;
+    this.previousWorkouts = null;
     this.state = {
       dragging: false,
       user: null,
@@ -38,25 +39,14 @@ class WorkoutEditor extends Component {
       clipboard: null,
       editedUnit: null,
       editedUnitCoordinates: null,
-      workoutData: {
-        selectedDate: new Date().toISOString().split("T")[0],
-        selectedTime: "18:00:00",
-        sticky: false,
-        name: "",
-        sections: [
-          { name: "Rozgrzewka", complexes: [] },
-          { name: "Siła", complexes: [] },
-          { name: "Wytrzymałość", complexes: [] },
-          { name: "Mobilność", complexes: [] },
-        ],
-      },
+      workoutData: null,
     };
   }
 
   async componentDidMount() {
     const { data: userData } = await apolloClient.query({
       query: GET_USER,
-      variables: { id: this.props.match.params.id },
+      variables: { id: this.props.location.state.userID },
     });
 
     const { data: familiesData } = await apolloClient.query({
@@ -64,8 +54,51 @@ class WorkoutEditor extends Component {
       variables: { userId: this.props.user.id },
     });
 
+    let workoutData = {
+      selectedDate: new Date().toISOString().split("T")[0],
+      selectedTime: "18:00:00",
+      sticky: false,
+      name: "",
+      sections: [
+        { name: "Rozgrzewka", complexes: [] },
+        { name: "Siła", complexes: [] },
+        { name: "Wytrzymałość", complexes: [] },
+        { name: "Mobilność", complexes: [] },
+      ],
+    };
+
+    this.previousWorkouts = [...userData.user.workouts];
+
+    if (this.props.workoutToCopy) {
+      this.previousWorkouts.unshift(this.props.workoutToCopy)
+    }
+
+    if (this.props.edit) {
+      const editedWorkout = cloneDeep(
+        userData.user.workouts.find(
+          (workout) => workout.id === this.props.match.params.id
+        )
+      );
+
+      const date = new Date(editedWorkout.scheduled);
+      const hours =
+        date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
+      const minutes =
+        date.getMinutes() < 10 ? `${date.getMinutes()}0` : date.getMinutes();
+      const dateTimeArray = editedWorkout.scheduled.split("T");
+      workoutData.selectedDate = dateTimeArray[0];
+      workoutData.selectedTime = `${hours}:${minutes}`;
+      workoutData.id = editedWorkout.id;
+      workoutData.sticky = editedWorkout.sticky;
+      workoutData.name = editedWorkout.name;
+      workoutData.sections = editedWorkout.sections;
+      this.previousWorkouts = this.previousWorkouts.filter(
+        (workout) => workout.id !== this.props.match.params.id
+      );
+    }
+
     this.families = familiesData.families;
-    this.setState({ user: userData.user });
+    this.setState({ user: userData.user, workoutData });
   }
 
   changeWorkoutData = (key, event) => {
@@ -99,6 +132,7 @@ class WorkoutEditor extends Component {
 
   copyToClipboard = (type, content) => {
     const copiedContent = cloneDeep(content);
+    copiedContent.feedback = "";
     this.setState({
       clipboard: {
         type,
@@ -370,11 +404,13 @@ class WorkoutEditor extends Component {
           />
           {this.renderSections()}
           {this.renderUnitEditor()}
-          <PreviousWorkouts
-            workouts={this.state.user.workouts}
-            copy={this.copyToClipboard}
-          />
-          <Buttons
+          {this.previousWorkouts.length > 0 ? (
+            <PreviousWorkouts
+              workouts={this.previousWorkouts}
+              copy={this.copyToClipboard}
+            />
+          ) : null}
+          <SaveButtons
             goBack={this.props.history.goBack}
             workout={this.state.workoutData}
             userId={this.state.user.id}
@@ -393,6 +429,7 @@ const $SectionButtons = styled.div`
 const mapStateToProps = (state) => {
   return {
     user: state.user,
+    workoutToCopy: state.workoutToCopy,
   };
 };
 

@@ -1,7 +1,13 @@
-import { React, styled, connect, apolloClient, cloneDeep } from "src/imports/react";
+import {
+  React,
+  styled,
+  connect,
+  apolloClient,
+  cloneDeep,
+} from "src/imports/react";
 import { Button } from "src/imports/components";
 import { CREATE_WORKOUT, UPDATE_WORKOUT, GET_USER } from "src/imports/apollo";
-import { setNotification } from "src/store/actions";
+import { setNotification, addEntryToDB } from "src/store/actions";
 import removeTypename from "src/utils/removeTypename";
 
 const Buttons = (props) => {
@@ -55,7 +61,13 @@ const Buttons = (props) => {
     }
 
     try {
-      await apolloClient.mutate(configObj);
+      const { data } = await apolloClient.mutate(configObj);
+      if (props.workoutToPair.id === data.updateWorkout.id) {
+        props.addEntryToDB("workoutToPair", {
+          ...data.updateWorkout,
+          user: props.workoutToPair.user,
+        });
+      }
       props.goBack();
     } catch (err) {
       console.log(err);
@@ -84,10 +96,17 @@ const $Buttons = styled.div`
   }
 `;
 
-const mapDispatchToProps = (dispatch) => {
+const mapStateToProps = (state) => {
   return {
-    setNotification: (notification) => dispatch(setNotification(notification)),
+    workoutToPair: state.workoutToPair,
   };
 };
 
-export default connect(null, mapDispatchToProps)(Buttons);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setNotification: (notification) => dispatch(setNotification(notification)),
+    addEntryToDB: (key, entry) => dispatch(addEntryToDB(key, entry)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Buttons);

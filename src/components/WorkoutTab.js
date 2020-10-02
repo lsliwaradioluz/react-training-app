@@ -11,8 +11,31 @@ import {
 } from "src/imports/react";
 import { DELETE_WORKOUT, GET_USER } from "src/imports/apollo";
 import { Icon, ContextMenu } from "src/imports/components";
+import { addEntryToDB } from "src/store/actions";
 
 const WorkoutTab = (props) => {
+  const workoutName = props.workout.sticky
+    ? props.workout.name
+    : filters.reverseDate(props.workout.scheduled);
+
+  const workoutScheduled = props.workout.sticky
+    ? `dodano ${filters.reverseDate(props.workout.scheduled)}`
+    : `${filters.getDayName(props.workout.scheduled)} ${filters.getTime(
+        props.workout.scheduled
+      )}`;
+
+  const copyPairWorkout = (key) => {
+    const workout = cloneDeep(props.workout);
+    workout.user = {
+      id: props.user.id,
+      username: props.user.username,
+      fullname: props.user.fullname,
+    };
+
+    props.addEntryToDB(key, workout);
+    props.history.push('/users')
+  };
+
   const deleteWorkout = async () => {
     await apolloClient.mutate({
       mutation: DELETE_WORKOUT,
@@ -38,14 +61,32 @@ const WorkoutTab = (props) => {
         }
       },
     });
-    props.onWorkoutDelete()
+    props.onWorkoutDelete();
   };
 
   const renderContextMenu = () => {
-    if (props.user.admin) {
+    if (props.isCoach && !props.location.pathname.includes("workouts")) {
       return (
         <$ContextMenu
           buttons={[
+            {
+              caption: "Edytuj",
+              icon: "pencil",
+              link: {
+                pathname: `/workouts/${props.workout.id}/edit`,
+                state: { userID: props.user.id },
+              },
+            },
+            {
+              caption: "Paruj",
+              icon: "double-arrow-cross-of-shuffle",
+              callback: copyPairWorkout.bind(this, "workoutToPair"),
+            },
+            {
+              caption: "Kopiuj",
+              icon: "copy",
+              callback: copyPairWorkout.bind(this, "workoutToCopy"),
+            },
             { caption: "Usuń", icon: "trash", callback: deleteWorkout },
           ]}
         />
@@ -58,11 +99,8 @@ const WorkoutTab = (props) => {
   return (
     <$WorkoutTab>
       <$WorkoutData to={`/workouts/${props.workout.id}`}>
-        <$Date>{filters.reverseDate(props.workout.scheduled)}</$Date>
-        <$DayAndTime>
-          {filters.getDayName(props.workout.scheduled)}{" "}
-          {filters.getTime(props.workout.scheduled)}
-        </$DayAndTime>
+        <$WorkoutName>{workoutName}</$WorkoutName>
+        <$WorkoutScheduled>{workoutScheduled}</$WorkoutScheduled>
       </$WorkoutData>
       {renderContextMenu()}
     </$WorkoutTab>
@@ -80,11 +118,11 @@ const $WorkoutData = styled(NavLink)`
   width: 100%;
 `;
 
-const $Date = styled.h4`
+const $WorkoutName = styled.h4`
   margin-bottom: 0;
 `;
 
-const $DayAndTime = styled.p`
+const $WorkoutScheduled = styled.p`
   color: ${colors.faded};
   font-size: 13px;
   margin-bottom: 0;
@@ -101,8 +139,19 @@ const $ContextMenu = styled(ContextMenu)`
 
 const mapStateToProps = (state) => {
   return {
-    user: state.user,
+    isCoach: state.user.admin,
+    workoutToPair: state.workoutToPair,
+    workoutToCopy: state.workoutToCopy, 
   };
 };
 
-export default connect(mapStateToProps)(withRouter(WorkoutTab));
+const mapDispatchToProps = (dispatch) => {
+  return {
+    addEntryToDB: (key, entry) => dispatch(addEntryToDB(key, entry)),
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withRouter(WorkoutTab));

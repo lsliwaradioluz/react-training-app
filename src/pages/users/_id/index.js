@@ -1,8 +1,15 @@
-import { React, Component, apolloClient, colors, styled, NavLink } from "src/imports/react";
+import {
+  React,
+  Component,
+  apolloClient,
+  colors,
+  styled,
+  NavLink,
+} from "src/imports/react";
 import { Header, Icon, Placeholder } from "src/imports/components";
 import DefaultLayout from "src/layouts/Default";
 import { GET_USER } from "src/imports/apollo";
-import WorkoutList from "src/components/WorkoutList"
+import WorkoutList from "src/components/WorkoutList";
 
 class UserPage extends Component {
   state = {
@@ -15,10 +22,10 @@ class UserPage extends Component {
       variables: { id: this.props.match.params.id },
     });
     this.setState({ user: data.user });
-  } 
+  };
 
   componentDidMount() {
-    this.getUser()
+    this.getUser();
   }
 
   render() {
@@ -39,11 +46,16 @@ class UserPage extends Component {
           </p>
           <$Subheader>
             Lista treningów
-            <NavLink to={`${this.props.history.location.pathname}/new-workout`}>
+            <NavLink
+              to={{
+                pathname: "/workouts/new",
+                state: { userID: this.props.match.params.id },
+              }}
+            >
               <$Icon name="plus" />
             </NavLink>
           </$Subheader>
-          <WorkoutList workouts={this.state.user.workouts} onWorkoutDelete={this.getUser} />
+          <WorkoutList user={this.state.user} onWorkoutDelete={this.getUser} />
         </DefaultLayout>
       );
     }
@@ -56,10 +68,10 @@ const $Subheader = styled.h3`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0;
-`
+`;
 
 const $Icon = styled(Icon)`
   font-size: 18px;
-`
+`;
 
 export default UserPage;

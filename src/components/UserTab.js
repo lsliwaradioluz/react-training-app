@@ -99,15 +99,30 @@ const $UserTab = styled.div`
   text-decoration: none;
   display: flex;
   align-items: flex-start;
+  @media (min-width: 1024px) {
+    flex-basis: 23%;
+    flex-grow: 0;
+    &:hover {
+      opacity: 0.8;
+    }
+  }
 `;
 
 const $UserData = styled(NavLink)`
   display: flex;
   width: 100%;
+  @media (min-width: 1024px) {
+    flex-direction: column;
+  }
 `;
 
 const $Avatar = styled(Avatar)`
   margin-right: 0.5rem;
+  @media (min-width: 1024px) {
+    margin: 0 0 1rem 0;
+    width: 100%;
+    height: 100%;
+  }
 `;
 
 const $Username = styled.h4`
@@ -125,6 +140,9 @@ const $ContextMenu = styled(ContextMenu)`
   align-self: center;
   margin-left: auto;
   color: ${colors.headers};
+  @media (min-width: 1024px) {
+    display: none;
+  }
 `;
 
 const mapStateToProps = (state) => {

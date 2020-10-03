@@ -79,7 +79,7 @@ class Users extends Component {
       });
     }
 
-    return <Fragment>{userTabs}</Fragment>;
+    return <$UserTabs>{userTabs}</$UserTabs>;
   };
 
   renderInviteUser = () => {
@@ -156,6 +156,14 @@ const $Buttons = styled.div`
     margin-bottom: 0;
   }
 `;
+
+const $UserTabs = styled.div`
+  @media (min-width: 1024px) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+`
 
 const mapStateToProps = (state) => {
   return {

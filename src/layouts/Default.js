@@ -5,9 +5,11 @@ import TopNavigation from "src/components/TopNavigation"
 const DefaultLayout = (props) => {
   return (
     <Default>
-      <TopNavigation />
-      {props.children}
       <BottomNavigation />
+      <$MainContent>
+        <TopNavigation />
+        {props.children}
+      </$MainContent>
     </Default>
   )
 }
@@ -19,6 +21,16 @@ const Default = styled.main`
   color: white;
   display: flex; 
   flex-direction: column;
+  @media (min-width: 1024px) {
+    flex-direction: row;
+    padding: 0;
+  }
+`
+
+const $MainContent = styled.div`
+  @media (min-width: 1024px) {
+    padding: 2rem;
+  }
 `
 
 export default DefaultLayout

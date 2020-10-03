@@ -3,13 +3,13 @@ import {React, styled, keyframes, colors} from "src/imports/react"
 const Placeholder = props => {
   const elements = []
   for (let i = 0; i < 5; i++) {
-    elements.push(<PldrElement key={i} />)
+    elements.push(<$PlaceholderElement key={i} />)
   }
 
   return (
-    <Pldr>
+    <$Placeholder>
       {elements}
-    </Pldr>
+    </$Placeholder>
   )
 }
 
@@ -25,12 +25,12 @@ const blink = keyframes`
   }
 `
 
-const Pldr = styled.div`
+const $Placeholder = styled.div`
   opacity: 0.5;
   animation: ${blink} 1s infinite;
 `
 
-const PldrElement = styled.div`
+const $PlaceholderElement = styled.div`
   height: 5rem;
   background-color: ${colors.secondary};
   margin-bottom: 0.5rem;

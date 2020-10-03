@@ -11,6 +11,7 @@ import {
 } from "src/imports/react";
 import { setNotification } from "src/store/actions";
 import ExerciseLayout from "src/layouts/Exercise";
+import DefaultLayout from "src/layouts/Default";
 import { Placeholder, Video, ContextMenu } from "src/imports/components";
 import {
   GET_FAMILY,
@@ -150,7 +151,7 @@ class ExercisePage extends Component {
               },
             });
           } catch (err) {
-            console.log(err)
+            console.log(err);
           }
         },
       });
@@ -164,7 +165,11 @@ class ExercisePage extends Component {
   };
 
   render() {
-    let elements = <Placeholder />;
+    let elements = (
+      <DefaultLayout>
+        <Placeholder />
+      </DefaultLayout>
+    );
 
     if (this.state.family) {
       let buttons = (
@@ -193,10 +198,10 @@ class ExercisePage extends Component {
                   {
                     caption: "Edytuj ćwiczenie",
                     icon: "pencil",
-                    link: { 
-                      pathname: `/exercises/${this.state.family.id}/edit-exercise`, 
-                      state: { exercise: this.getCurrentExercise().id }
-                    }
+                    link: {
+                      pathname: `/exercises/${this.state.family.id}/edit-exercise`,
+                      state: { exercise: this.getCurrentExercise().id },
+                    },
                   },
                   {
                     caption: "Usuń ćwiczenie",
@@ -224,43 +229,41 @@ class ExercisePage extends Component {
       }
 
       elements = (
-        <Fragment>
-          {exercise}
-          <$Family>
-            <$Name color={colors.headers}>
-              {this.state.family.name}
-              <ContextMenu
-                buttons={[
-                  {
-                    caption: "Dodaj ćwiczenie",
-                    icon: "add-button",
-                    link: `/exercises/${this.state.family.id}/new-exercise`,
-                  },
-                  {
-                    caption: "Edytuj kategorię",
-                    icon: "pencil",
-                    link: `/exercises/${this.state.family.id}/edit-family`,
-                  },
-                  {
-                    caption: "Usuń kategorię",
-                    icon: "trash",
-                    callback: this.deleteFamily,
-                  },
-                ]}
-              />
-            </$Name>
-            <$Caption>{this.getFamilyCaption()}</$Caption>
-            {buttons}
-          </$Family>
-        </Fragment>
+        <ExerciseLayout>
+          <$ExercisePage>
+            {exercise}
+            <$Family>
+              <$Name color={colors.headers}>
+                {this.state.family.name}
+                <ContextMenu
+                  buttons={[
+                    {
+                      caption: "Dodaj ćwiczenie",
+                      icon: "add-button",
+                      link: `/exercises/${this.state.family.id}/new-exercise`,
+                    },
+                    {
+                      caption: "Edytuj kategorię",
+                      icon: "pencil",
+                      link: `/exercises/${this.state.family.id}/edit-family`,
+                    },
+                    {
+                      caption: "Usuń kategorię",
+                      icon: "trash",
+                      callback: this.deleteFamily,
+                    },
+                  ]}
+                />
+              </$Name>
+              <$Caption>{this.getFamilyCaption()}</$Caption>
+              {buttons}
+            </$Family>
+          </$ExercisePage>
+        </ExerciseLayout>
       );
     }
 
-    return (
-      <ExerciseLayout>
-        <$ExercisePage>{elements}</$ExercisePage>
-      </ExerciseLayout>
-    );
+    return elements;
   }
 }
 

@@ -82,6 +82,9 @@ const $TopNavigation = styled.ul`
   display: flex;
   justify-content: space-between;
   color: ${(props) => (props.color ? props.color : colors.faded)};
+  @media (min-width: 1024px) {
+    display: none;
+  }
 `;
 
 const bellStyles = css`

@@ -64,7 +64,7 @@ class App extends Component {
           <Switch>
             <Route exact path="/register" component={RegisterPage} />
             <Route exact path="/login" component={LoginPage} />
-            <Redirect exact from="/" to="/login" />
+            <Redirect exact={this.props.user ? true : false} from="/" to="/login" />
             {this.props.user ? (
               <Fragment>
                 <Route exact path="/dashboard" component={DashboardPage} />

@@ -45,9 +45,11 @@ class App extends Component {
   }
 
   hydrateStore() {
-    const user = Cookies.get("user");
+    let user = Cookies.get("user");
+    if (user !== undefined) {
+      this.props.setUser(user && JSON.parse(user));
+    }
     this.props.fetchDataFromDB();
-    this.props.setUser(user && JSON.parse(user));
   }
 
   render() {

@@ -64,7 +64,11 @@ class App extends Component {
           <Switch>
             <Route exact path="/register" component={RegisterPage} />
             <Route exact path="/login" component={LoginPage} />
-            <Redirect exact={this.props.user ? true : false} from="/" to="/login" />
+            <Redirect
+              exact={this.props.user ? true : false}
+              from="/"
+              to={this.props.user ? "/dashboard" : "/login"}
+            />
             {this.props.user ? (
               <Fragment>
                 <Route exact path="/dashboard" component={DashboardPage} />
@@ -95,7 +99,11 @@ class App extends Component {
                 <Route exact path="/cardio" component={CardioPage} />
                 <Route exact path="/workouts" component={WorkoutsPage} />
                 <Switch>
-                  <Route exact path="/workouts/new" component={NewWorkoutPage} />
+                  <Route
+                    exact
+                    path="/workouts/new"
+                    component={NewWorkoutPage}
+                  />
                   <Route exact path="/workouts/:id" component={WorkoutPage} />
                 </Switch>
                 <Route

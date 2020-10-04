@@ -62,7 +62,7 @@ const Buttons = (props) => {
 
     try {
       const { data } = await apolloClient.mutate(configObj);
-      if (props.workoutToPair.id === data.updateWorkout.id) {
+      if (props.workoutToPair && props.workoutToPair.id === data.updateWorkout.id) {
         props.addEntryToDB("workoutToPair", {
           ...data.updateWorkout,
           user: props.workoutToPair.user,

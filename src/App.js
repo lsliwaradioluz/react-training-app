@@ -45,7 +45,6 @@ class App extends Component {
   }
 
   hydrateStore() {
-    console.log('dupa')
     let user = Cookies.get("user");
     if (user !== undefined) {
       this.props.setUser(user && JSON.parse(user));

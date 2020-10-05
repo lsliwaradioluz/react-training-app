@@ -18,16 +18,17 @@ class Carousel extends Component {
     this.setState({ mounted: true });
     this.stroke = this.wrapperRef.current.offsetWidth;
     this.numberOfSlides = this.wrapperRef.current.scrollWidth / this.stroke;
-    this.changeSlide(this.state.currentIndex)
+    this.changeSlide(this.state.currentIndex);
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.index !== this.props.index) {
-      this.changeSlide(this.props.index)
+      this.changeSlide(this.props.index);
     }
   }
 
   onTouchStartHandler = (event) => {
+    this.wrapperRef.current.style.overflowX = "scroll";
     this.touchStart = event.touches[0].screenX;
   };
 
@@ -36,6 +37,7 @@ class Carousel extends Component {
   };
 
   onTouchEndHandler = () => {
+    this.wrapperRef.current.style.overflowX = "hidden";
     if (
       this.currentMove > 40 &&
       this.state.currentIndex + 1 < this.numberOfSlides
@@ -44,7 +46,7 @@ class Carousel extends Component {
     } else if (this.currentMove < -40 && this.state.currentIndex > 0) {
       this.changeSlide(this.state.currentIndex - 1);
     } else {
-      this.changeSlide(this.state.currentIndex)
+      this.changeSlide(this.state.currentIndex);
     }
 
     this.touchStart = 0;
@@ -52,8 +54,8 @@ class Carousel extends Component {
   };
 
   changeSlide = (index) => {
-    this.setState({ currentIndex: index });
     this.wrapperRef.current.scrollLeft = this.stroke * index;
+    this.setState({ currentIndex: index });
   };
 
   renderIndicators = () => {
@@ -61,7 +63,7 @@ class Carousel extends Component {
       return;
     }
 
-    const indicators = []
+    const indicators = [];
 
     for (let i = 0; i < this.numberOfSlides; i++) {
       indicators.push(
@@ -104,7 +106,7 @@ const $Carousel = styled.div`
 `;
 
 const $Slider = styled.div`
-  overflow-x: ${props => props.inactive ? "hidden" : "scroll"};
+  overflow-x: ${(props) => (props.inactive ? "hidden" : "scroll")};
   display: flex;
   scroll-behavior: smooth;
   > * {

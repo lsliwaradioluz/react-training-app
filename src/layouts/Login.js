@@ -3,7 +3,7 @@ import TopNavigation from "src/components/TopNavigation"
 
 const AuthLayout = (props) => {
   return (
-    <Auth>
+    <Auth className={props.className}>
       <TopNavigation />
       {props.children}
     </Auth>

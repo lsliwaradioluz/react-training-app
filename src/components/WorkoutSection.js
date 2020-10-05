@@ -95,7 +95,7 @@ class WorkoutSection extends Component {
         </Fragment>
       )
     } else {
-      return <$Placeholder>W tej sekcji nie ma żadnych ćwiczeń. Dodaj pierwsze, dotykając ikony +</$Placeholder>
+      return <$Placeholder>W tej sekcji nie ma żadnych ćwiczeń. Dodaj pierwsze, dotykając ikony +.</$Placeholder>
     }
 
   };

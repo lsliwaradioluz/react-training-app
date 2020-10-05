@@ -86,7 +86,7 @@ class PreviousWorkouts extends Component {
           </$PreviousWorkoutsNav>
         </Subheader>
         <CarouselContainer>
-          <Carousel>{previousWorkoutSections}</Carousel>
+          <Carousel key={this.state.current}>{previousWorkoutSections}</Carousel>
         </CarouselContainer>
       </Fragment>
     );

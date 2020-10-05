@@ -418,9 +418,13 @@ class WorkoutEditor extends Component {
         </Fragment>
       );
     }
-    return <Layout>{view}</Layout>;
+    return <$Layout>{view}</$Layout>;
   }
 }
+
+const $Layout = styled(Layout)`
+  padding-bottom: 0;
+`
 
 const $SectionButtons = styled.div`
   display: flex;

@@ -53,80 +53,69 @@ class App extends Component {
   }
 
   render() {
+    let routes = (
+      <Switch>
+        <Route exact path="/register" component={RegisterPage} />
+        <Route exact path="/login" component={LoginPage} />
+        <Redirect from="/" to="/login" />
+      </Switch>
+    );
+
     let app = (
       <DefaultLayout>
         <Placeholder />
       </DefaultLayout>
     );
+
+    if (this.props.user) {
+      routes = (
+        <Switch>
+          <Route exact path="/dashboard" component={DashboardPage} />
+          <Route exact path="/exercises/new-family" component={NewFamilyPage} />
+          <Route exact path="/exercises/:id" component={ExercisePage} />
+          <Route
+            exact
+            path="/exercises/:id/edit-family"
+            component={EditFamilyPage}
+          />
+          <Route
+            exact
+            path="/exercises/:id/new-exercise"
+            component={NewExercisePage}
+          />
+          <Route
+            exact
+            path="/exercises/:id/edit-exercise"
+            component={EditExercisePage}
+          />
+          <Route exact path="/exercises" component={ExercisesPage} />
+          <Route exact path="/cardio" component={CardioPage} />
+          <Route exact path="/workouts" component={WorkoutsPage} />
+          <Route exact path="/workouts/new" component={NewWorkoutPage} />
+          <Route exact path="/workouts/:id" component={WorkoutPage} />
+          <Route exact path="/workouts/:id/edit" component={EditWorkoutPage} />
+          <Route
+            exact
+            path="/workouts/:id/assistant"
+            component={WorkoutAssistantPage}
+          />
+          <Route exact path="/users" component={UsersPage} />
+          <Route exact path="/users/:id" component={UserPage} />
+          <Route exact path="/settings" component={SettingsPage} />
+          <Route
+            exact
+            path="/settings/change-password"
+            component={ChangePasswordPage}
+          />
+          <Redirect from="/" to="/dashboard" />
+        </Switch>
+      );
+    }
+
     if (this.props.storeHydrated) {
       app = (
         <div className="App">
-          <Switch>
-            <Route exact path="/register" component={RegisterPage} />
-            <Route exact path="/login" component={LoginPage} />
-            <Redirect
-              exact={this.props.user ? true : false}
-              from="/"
-              to={this.props.user ? "/dashboard" : "/login"}
-            />
-            {this.props.user ? (
-              <Fragment>
-                <Route exact path="/dashboard" component={DashboardPage} />
-                <Switch>
-                  <Route
-                    exact
-                    path="/exercises/new-family"
-                    component={NewFamilyPage}
-                  />
-                  <Route exact path="/exercises/:id" component={ExercisePage} />
-                  <Route
-                    exact
-                    path="/exercises/:id/edit-family"
-                    component={EditFamilyPage}
-                  />
-                  <Route
-                    exact
-                    path="/exercises/:id/new-exercise"
-                    component={NewExercisePage}
-                  />
-                  <Route
-                    exact
-                    path="/exercises/:id/edit-exercise"
-                    component={EditExercisePage}
-                  />
-                </Switch>
-                <Route exact path="/exercises" component={ExercisesPage} />
-                <Route exact path="/cardio" component={CardioPage} />
-                <Route exact path="/workouts" component={WorkoutsPage} />
-                <Switch>
-                  <Route
-                    exact
-                    path="/workouts/new"
-                    component={NewWorkoutPage}
-                  />
-                  <Route exact path="/workouts/:id" component={WorkoutPage} />
-                </Switch>
-                <Route
-                  exact
-                  path="/workouts/:id/edit"
-                  component={EditWorkoutPage}
-                />
-                <Route
-                  exact
-                  path="/workouts/:id/assistant"
-                  component={WorkoutAssistantPage}
-                />
-                <Route exact path="/users" component={UsersPage} />
-                <Route exact path="/users/:id" component={UserPage} />
-                <Route exact path="/settings" component={SettingsPage} />
-                <Route
-                  exact
-                  path="/settings/change-password"
-                  component={ChangePasswordPage}
-                />
-              </Fragment>
-            ) : null}
-          </Switch>
+          {routes}
           <Notification />
           <Confirm />
           <Loading />

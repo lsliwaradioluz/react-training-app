@@ -1,0 +1,1 @@
+export const MANAGE_STOPWATCH = 'MANAGE_STOPWATCH'

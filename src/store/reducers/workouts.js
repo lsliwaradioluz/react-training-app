@@ -1,4 +1,4 @@
-import * as actionTypes from "src/store/actionTypes";
+import * as actionTypes from "src/store/actionTypes/workouts";
 
 const initialState = {
   workoutToPair: null,

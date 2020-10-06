@@ -1,7 +1,7 @@
 import { React, styled, colors, connect } from "src/imports/react";
 import { Header, Carousel, Button, Icon } from "src/imports/components";
 import DefaultLayout from "src/layouts/Default";
-import { setNotification } from "src/store/actions";
+import { setNotification } from "src/store/actions/main";
 
 const Dashboard = (props) => {
   const getFirstName = () => {

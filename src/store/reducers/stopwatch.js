@@ -1,4 +1,4 @@
-import * as actionTypes from "src/store/actionTypes";
+import * as actionTypes from "src/store/actionTypes/stopwatch";
 
 const initialState = {
   interval: null,

@@ -8,7 +8,7 @@ import {
 import { Header, Input, Button } from "src/imports/components"
 import { LOGIN } from "src/imports/apollo"
 import AuthLayout from "src/layouts/Login";
-import { setNotification, setUser } from "src/store/actions";
+import { setNotification, setUser } from "src/store/actions/index";
 
 class Login extends Component {
   state = {

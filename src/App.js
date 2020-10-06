@@ -7,10 +7,9 @@ import {
   Switch,
   Route,
   Redirect,
-  Fragment,
 } from "src/imports/react";
 import { connect } from "react-redux";
-import { fetchFromDB, setUser } from "src/store/actions";
+import { fetchFromDB, setUser } from "src/store/actions/index";
 import Cookies from "js-cookie";
 
 import Notification from "src/components/Notification";

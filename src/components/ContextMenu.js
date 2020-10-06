@@ -5,6 +5,7 @@ import {
   css,
   connect,
   NavLink,
+  keyframes,
 } from "src/imports/react";
 import { Icon } from "src/imports/components";
 import { setContextMenu } from "src/store/actions";
@@ -35,11 +36,11 @@ class ContextMenu extends Component {
 
   renderTrigger = () => {
     if (this.props.trigger) {
-      return this.props.trigger
+      return this.props.trigger;
     } else {
-      return <$Icon name="vertical-dots" />
+      return <Icon name="vertical-dots" />;
     }
-  }
+  };
 
   renderMenuButtons = () => {
     let buttons = null;
@@ -47,26 +48,19 @@ class ContextMenu extends Component {
       buttons = this.props.buttons.map((button, index) => {
         if (button.callback) {
           return (
-            <$Button
-              key={`button-${index}`}
-              onClick={button.callback}
-            >
+            <$Button key={`button-${index}`} onClick={button.callback}>
               <$ButtonIcon name={button.icon} />
               {button.caption}
             </$Button>
           );
         } else if (button.link) {
           return (
-            <$Link
-              key={`button-${index}`}
-              to={button.link}
-            >
+            <$Link key={`button-${index}`} to={button.link}>
               <$ButtonIcon name={button.icon} />
               {button.caption}
             </$Link>
           );
         }
-        
       });
     }
     return buttons;
@@ -75,24 +69,35 @@ class ContextMenu extends Component {
   render() {
     return (
       <$ContextMenu className={this.props.className}>
-        <button id={this.state.id} onClick={this.clickTriggerHandler}>
+        <$Trigger id={this.state.id} onClick={this.clickTriggerHandler}>
           {this.renderTrigger()}
-        </button>
-        <$Buttons>{this.renderMenuButtons()}</$Buttons>
+        </$Trigger>
+        {this.props.activeContextMenu === this.state.id ? (
+          <$Buttons>{this.renderMenuButtons()}</$Buttons>
+        ) : null}
       </$ContextMenu>
     );
   }
 }
 
+const openButtons = keyframes`
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+`;
+
 const $ContextMenu = styled.div`
-  margin-left: .5rem;
+  margin-left: 0.5rem;
   display: flex;
   position: relative;
 `;
 
-const $Icon = styled(Icon)`
-  font-size: inherit;
-`;
+const $Trigger = styled.button`
+  height: 15px;
+`
 
 const $Buttons = styled.div`
   background-color: white;
@@ -103,6 +108,8 @@ const $Buttons = styled.div`
   z-index: 1000;
   display: flex;
   flex-direction: column;
+  animation: ${openButtons} 0.2s forwards;
+  transform-origin: top right;
 `;
 
 const buttonStyles = css`
@@ -110,11 +117,11 @@ const buttonStyles = css`
   align-items: center;
   font-weight: 300;
   font-size: 12px;
-  padding: .5rem;
+  padding: 0.5rem;
   padding-right: 1rem;
   color: black;
   white-space: nowrap;
-`
+`;
 
 const $Button = styled.button`
   ${buttonStyles}
@@ -122,7 +129,7 @@ const $Button = styled.button`
 
 const $Link = styled(NavLink)`
   ${buttonStyles}
-`
+`;
 
 const $ButtonIcon = styled(Icon)`
   font-size: 12px;
@@ -131,7 +138,7 @@ const $ButtonIcon = styled(Icon)`
 
 const mapStateToProps = (state) => {
   return {
-    activeContextMenu: state.activeContextMenu,
+    activeContextMenu: state.main.activeContextMenu,
   };
 };
 

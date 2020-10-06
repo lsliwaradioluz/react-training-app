@@ -121,7 +121,7 @@ const $Button = styled(Button)`
 
 const mapStateToProps = (state) => {
   return {
-    userID: state.user.id,
+    userID: state.main.user.id,
   };
 };
 

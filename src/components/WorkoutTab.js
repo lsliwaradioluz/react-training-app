@@ -112,6 +112,7 @@ const $WorkoutTab = styled.div`
   position: relative;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 `;
 
 const $WorkoutData = styled(NavLink)`
@@ -139,9 +140,9 @@ const $ContextMenu = styled(ContextMenu)`
 
 const mapStateToProps = (state) => {
   return {
-    isCoach: state.user.admin,
-    workoutToPair: state.workoutToPair,
-    workoutToCopy: state.workoutToCopy, 
+    isCoach: state.main.user.admin,
+    workoutToPair: state.workouts.workoutToPair,
+    workoutToCopy: state.workouts.workoutToCopy, 
   };
 };
 

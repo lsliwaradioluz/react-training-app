@@ -6,12 +6,9 @@ const initialState = {
   activeContextMenu: null,
   notification: null,
   loading: false,
-  workoutToPair: null,
-  workoutToCopy: null,
-  storeHydrated: false, 
 };
 
-const reducer = (state = initialState, action) => {
+const mainReducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.SET_USER:
       Cookies.set("user", action.user);
@@ -44,20 +41,9 @@ const reducer = (state = initialState, action) => {
         ...state,
         loading: action.loading,
       };
-    case actionTypes.ADD_ENTRY_TO_DB:
-      return {
-        ...state,
-        [action.payload.key]: action.payload.entry,
-      };
-    case actionTypes.FETCH_FROM_DB:
-      return {
-        ...state,
-        ...action.workouts,
-        storeHydrated: true, 
-      };
     default:
       return state;
   }
 };
 
-export default reducer;
+export default mainReducer;

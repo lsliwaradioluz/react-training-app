@@ -28,7 +28,7 @@ const $ModalBackdrop = styled.div`
   width: 100%;
   max-width: 450px;
   background-color: rgba(0, 0, 0, 0.678);
-  z-index: 1001;
+  z-index: 1005;
 `;
 
 const $ModalContent = styled.div`
@@ -38,7 +38,7 @@ const $ModalContent = styled.div`
   height: 100vh;
   width: 100%;
   max-width: 450px;
-  z-index: 1002;
+  z-index: 1005;
   display: flex;
   flex-direction: column;
   justify-content: center;

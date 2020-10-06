@@ -186,13 +186,13 @@ class WorkoutPage extends Component {
     }
 
     return (
-      <$HeaderWrapper>
+      <div>
         {switchButton}
         <Header>
           {headerText}
           <Date date={this.workouts[this.state.currentWorkout].scheduled} />
         </Header>
-      </$HeaderWrapper>
+      </div>
     );
   };
 
@@ -250,8 +250,6 @@ class WorkoutPage extends Component {
   }
 }
 
-const $HeaderWrapper = styled.div``;
-
 const $SwitchButton = styled.button`
   font-family: "Teko", sans-serif;
   font-size: 15px;
@@ -274,8 +272,8 @@ const $ContextMenuTrigger = styled(Icon)`
 
 const mapStateToProps = (state) => {
   return {
-    viewingUser: state.user,
-    workoutToPair: state.workoutToPair,
+    viewingUser: state.main.user,
+    workoutToPair: state.workouts.workoutToPair,
   };
 };
 

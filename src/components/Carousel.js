@@ -8,6 +8,7 @@ class Carousel extends Component {
       currentIndex: this.props.index || 0,
     };
     this.wrapperRef = React.createRef();
+    this.elementWidth = this.props.elementWidth || 1;
     this.numberOfSlides = 0;
     this.stroke = 0;
     this.touchStart = 0;
@@ -16,7 +17,7 @@ class Carousel extends Component {
 
   componentDidMount() {
     this.setState({ mounted: true });
-    this.stroke = this.wrapperRef.current.offsetWidth;
+    this.stroke = this.wrapperRef.current.offsetWidth * this.elementWidth;
     this.numberOfSlides = this.wrapperRef.current.scrollWidth / this.stroke;
     this.changeSlide(this.state.currentIndex);
   }
@@ -75,15 +76,16 @@ class Carousel extends Component {
       );
     }
 
-    return indicators;
+    return <$Indicators>{indicators}</$Indicators>;
   };
 
   render() {
     return (
       <$Carousel>
-        <$Indicators>{this.renderIndicators()}</$Indicators>
+        {this.props.hideIndicators ? null : this.renderIndicators()}
         <$Slider
           inactive={this.props.inactive}
+          elementWidth={this.elementWidth}
           ref={this.wrapperRef}
           onTouchStart={this.props.inactive ? null : this.onTouchStartHandler}
           onTouchMove={this.props.inactive ? null : this.onTouchMoveHandler}
@@ -110,7 +112,7 @@ const $Slider = styled.div`
   display: flex;
   scroll-behavior: smooth;
   > * {
-    width: 100%;
+    width: ${props => props.elementWidth * 100}%;
     flex-shrink: 0;
     flex-grow: 0;
   }

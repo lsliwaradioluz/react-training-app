@@ -44,3 +44,11 @@ export const fetchFromDB = () => {
     });
   };
 };
+
+export const manageStopwatch = (action, interval) => {
+  return { type: actionTypes.MANAGE_STOPWATCH, payload: { action, interval } };
+};
+
+export const manageAssistant = (assistantState) => {
+  return { type: actionTypes.MANAGE_ASSISTANT, assistantState };
+};

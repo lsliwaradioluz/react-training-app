@@ -1,4 +1,9 @@
-import { React, connect, styled, colors } from "src/imports/react";
+import {
+  React,
+  connect,
+  colors,
+  transition,
+} from "src/imports/react";
 import { setNotification } from "src/store/actions";
 
 const Notification = (props) => {
@@ -6,21 +11,26 @@ const Notification = (props) => {
     props.setNotification(null);
   };
 
-  let notification = null;
-  if (props.notification) {
-    const notificationDuration =
-      props.notification.length * 50 > 1000
-        ? props.notification.length * 50
-        : 1000;
+  let notificationDuration = 0
 
-    notification = <$Notification onClick={unsetNotification}>{props.notification}</$Notification>;
-    setTimeout(unsetNotification, notificationDuration);
+  if (props.notification) {
+    notificationDuration = props.notification.length * 100
+    setTimeout(unsetNotification, notificationDuration + 500);
   }
 
-  return notification;
+  return (
+    <$Notification
+      onClick={unsetNotification}
+      unmountOnExit
+      in={props.notification ? true : false}
+      timeout={notificationDuration}
+    >
+      {props.notification}
+    </$Notification>
+  );
 };
 
-const $Notification = styled.p`
+const $Notification = transition.p`
   position: fixed;
   bottom: 0;
   left: 0;
@@ -32,6 +42,11 @@ const $Notification = styled.p`
   margin-bottom: 0;
   background-color: ${colors.headers};
   color: ${colors.primary};
+  transition: transform .5s;
+  transform: translateY(100%);
+  &:enter-active {
+    transform: translateY(0);
+  }
 `;
 
 const mapStateToProps = (state) => {

@@ -147,7 +147,7 @@ const $ContextMenu = styled(ContextMenu)`
 
 const mapStateToProps = (state) => {
   return {
-    coach: state.user,
+    coach: state.main.user,
   };
 };
 

@@ -1,56 +1,50 @@
-import { React, Component, styled, colors } from "src/imports/react";
+import { React, Component, styled, colors, connect } from "src/imports/react";
 import { Button, Icon } from "src/imports/components";
+import { manageStopwatch } from "src/store/actions";
 
 class Stopwatch extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      time: 0,
-      running: false,
-    };
-    this.timerInterval = null;
-  }
-
   start = () => {
-    this.setState({ running: true });
-    this.timerInterval = setInterval(() => {
-      this.setState((state) => ({ time: state.time + 1 }));
+    const stopwatchInterval = setInterval(() => {
+      this.props.manageStopwatch("run", stopwatchInterval);
     }, 10);
   };
 
   stop = () => {
-    this.setState({ running: false });
-    clearInterval(this.timerInterval);
+    clearInterval(this.props.stopwatchInterval);
+    this.props.manageStopwatch("stop");
   };
 
   reset = () => {
-    this.setState({ time: 0 });
+    this.props.manageStopwatch("reset");
   };
 
-  renderTime = () => {
-    const miliseconds =
-      this.state.time % 100 < 10
-        ? `0${this.state.time % 100}`
-        : `${this.state.time % 100}`;
-    let seconds = Math.floor(this.state.time / 100);
+  getMiliseconds = () => {
+    return this.props.stopwatchTime % 100 < 10
+      ? `0${this.props.stopwatchTime % 100}`
+      : `${this.props.stopwatchTime % 100}`;
+  };
+
+  getSeconds = () => {
+    let seconds = Math.floor(this.props.stopwatchTime / 100);
     if (seconds >= 60) {
       seconds = Math.floor(seconds % 60);
     }
-    seconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
-    const minutes =
-      Math.floor(this.state.time / 6000) < 10
-        ? `0${Math.floor(this.state.time / 6000)}`
-        : `${Math.floor(this.state.time / 6000)}`;
-    return <$Time>{`${minutes}:${seconds}.${miliseconds}`}</$Time>;
+    return seconds < 10 ? `0${seconds}` : `${seconds}`;
+  };
+
+  getMinutes = () => {
+    return Math.floor(this.props.stopwatchTime / 6000) < 10
+      ? `0${Math.floor(this.props.stopwatchTime / 6000)}`
+      : `${Math.floor(this.props.stopwatchTime / 6000)}`;
   };
 
   renderButtons = () => {
     let buttons = [];
-    if (this.state.running) {
+    if (this.props.stopwatchInterval) {
       buttons.push({ iconName: "pause-button", cb: this.stop });
     } else {
       buttons.push({ iconName: "movie-player-play-button", cb: this.start });
-      if (this.state.time > 0) {
+      if (this.props.stopwatchTime > 0) {
         buttons.push({ iconName: "stop-1", cb: this.reset });
       }
     }
@@ -70,7 +64,7 @@ class Stopwatch extends Component {
         <$Header>Stoper</$Header>
         <$Body>
           {this.renderButtons()}
-          {this.renderTime()}
+          <$Time>{`${this.getMinutes()}:${this.getSeconds()}.${this.getMiliseconds()}`}</$Time>
         </$Body>
         <Button click={this.props.close}>Zamknij</Button>
       </$Stopwatch>
@@ -113,4 +107,17 @@ const $Button = styled.button`
   margin-right: 1rem;
 `;
 
-export default Stopwatch;
+const mapStateToProps = (state) => {
+  return {
+    stopwatchTime: state.stopwatch.currentTime,
+    stopwatchInterval: state.stopwatch.interval,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    manageStopwatch: (time, interval) =>
+      dispatch(manageStopwatch(time, interval)),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Stopwatch);

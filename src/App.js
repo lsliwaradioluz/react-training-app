@@ -128,8 +128,8 @@ class App extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    user: state.user,
-    storeHydrated: state.storeHydrated,
+    user: state.main.user,
+    storeHydrated: state.workouts.storeHydrated,
   };
 };
 

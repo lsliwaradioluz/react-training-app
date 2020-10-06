@@ -14,13 +14,14 @@ import { GET_WORKOUT } from "src/imports/apollo";
 import DefaultLayout from "src/layouts/Default";
 import ExerciseLayout from "src/layouts/Exercise";
 import Timer from "src/components/AssistantTimer";
-import { setNotification } from "src/store/actions";
+import { setNotification, manageAssistant } from "src/store/actions";
 
 class WorkoutAssistantPage extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    this.workout = null;
     this.state = {
-      controls: [0, 0, 0],
+      controls: null,
       timer: null,
       automaticModeOn: false,
       stopwatchModeOn: false,
@@ -37,7 +38,17 @@ class WorkoutAssistantPage extends Component {
     });
 
     this.workout = this.getModifiedWorkout(data.workout);
-    this.setState({ mounted: true });
+    if (this.props.assistantState.workoutID === this.workout.id) {
+      const state = this.props.assistantState
+      delete state.workoutID
+      this.setState({ ...state });
+    } else {
+      this.setState({ controls: [0, 0, 0] });
+    }
+  }
+
+  componentWillUnmount() {
+    this.props.manageAssistant({ ...this.state, workoutID: this.workout.id });
   }
 
   getModifiedWorkout(workout) {
@@ -308,7 +319,7 @@ class WorkoutAssistantPage extends Component {
       </DefaultLayout>
     );
 
-    if (this.state.mounted) {
+    if (this.state.controls) {
       view = (
         <ExerciseLayout>
           {this.renderVideo()}
@@ -427,15 +438,26 @@ const $Buttons = styled.div`
 `;
 
 const $Button = styled.button`
-  margin-right: .75rem;
+  margin-right: 0.75rem;
   font-size: 16px;
   color: ${(props) => (props.active ? colors.headers : "white")};
 `;
 
-const mapDispatchToProps = (dispatch) => {
+const mapStateToProps = (state) => {
   return {
-    setNotification: (notification) => dispatch(setNotification(notification)),
+    assistantState: state.assistant,
   };
 };
 
-export default connect(null, mapDispatchToProps)(WorkoutAssistantPage);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setNotification: (notification) => dispatch(setNotification(notification)),
+    manageAssistant: (assistantState) =>
+      dispatch(manageAssistant(assistantState)),
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(WorkoutAssistantPage);

@@ -167,9 +167,9 @@ const $UserTabs = styled.div`
 
 const mapStateToProps = (state) => {
   return {
-    userID: state.user.id,
-    workoutToPair: state.workoutToPair,
-    workoutToCopy: state.workoutToCopy,
+    userID: state.main.user.id,
+    workoutToPair: state.workouts.workoutToPair,
+    workoutToCopy: state.workouts.workoutToCopy,
   };
 };
 

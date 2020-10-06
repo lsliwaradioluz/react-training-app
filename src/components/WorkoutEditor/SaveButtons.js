@@ -4,7 +4,6 @@ import {
   connect,
   apolloClient,
   cloneDeep,
-  colors,
 } from "src/imports/react";
 import { Button } from "src/imports/components";
 import { CREATE_WORKOUT, UPDATE_WORKOUT, GET_USER } from "src/imports/apollo";

@@ -432,8 +432,8 @@ const $SectionButtons = styled.div`
 
 const mapStateToProps = (state) => {
   return {
-    user: state.user,
-    workoutToCopy: state.workoutToCopy,
+    user: state.main.user,
+    workoutToCopy: state.workouts.workoutToCopy,
   };
 };
 

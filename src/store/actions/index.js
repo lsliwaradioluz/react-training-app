@@ -1,4 +1,15 @@
-export { manageAssistant } from "./assistant";
+export {
+  setControls,
+  resetState,
+  toggleSoundOn,
+  toggleStopwatchMode,
+  toggleAutomaticMode,
+  startTimer,
+  setTimer,
+  incrementTime, 
+  decrementTime, 
+  pauseTimer,
+} from "./assistant";
 export {
   setContextMenu,
   setLoading,
@@ -6,5 +17,5 @@ export {
   setUser,
   unsetUser,
 } from "./main";
-export { manageStopwatch } from "./stopwatch";
+export { runStopwatch, stopStopwatch, resetStopwatch } from "./stopwatch";
 export { addEntryToDB, fetchFromDB } from "./workouts";

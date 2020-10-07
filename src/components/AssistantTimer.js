@@ -1,138 +1,131 @@
-import { React, Component, styled, colors, Fragment } from "src/imports/react";
+import { React, Component, styled, connect } from "src/imports/react";
 import { Icon } from "src/imports/components";
+import {
+  startTimer,
+  setTimer,
+  incrementTime,
+  decrementTime,
+  pauseTimer,
+} from "src/store/actions";
 
 class AssistantTimer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      running: false,
-      stopwatchMode: this.props.stopwatchMode,
-    };
-    this.time = this.props.stopwatchMode ? 0 : this.props.time;
-    this.timerInterval = null;
-    this.audio = new Audio(require(`../assets/sounds/beep-triple.mp3`));
-  }
+  audio = new Audio(require(`../assets/sounds/beep-triple.mp3`));
+
+  disableDecrementIncrementButtons = () => {
+    return this.props.stopwatch
+      ? true
+      : !this.props.active || this.props.interval;
+  };
+
+  disableResetButton = () => {
+    return this.props.stopwatch
+      ? this.props.currentTime === 0 || this.props.interval
+      : !this.props.active ||
+          this.props.interval ||
+          this.props.currentTime === this.props.initialTime;
+  };
+
+  disablePlayPauseButton = () => {
+    return this.props.stopwatch
+      ? false
+      : !this.props.active || this.props.currentTime == 0;
+  };
 
   componentDidMount() {
-    if (!this.props.stopwatchMode) {
-      this.props.updateTime(this.props.time);
-      if (this.props.active && this.props.automatic) {
-        this.start();
-      }
+    if (
+      this.props.active &&
+      this.props.automatic &&
+      !this.props.stopwatch &&
+      !this.props.interval
+    ) {
+      this.start();
     }
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.stopwatchMode !== prevProps.stopwatchMode) {
-      this.time = this.props.stopwatchMode ? 0 : this.props.time;
-      this.props.updateTime(this.time);
-      this.setState({ stopwatchMode: this.props.stopwatchMode });
-      this.stop();
+    if (this.props.stopwatch !== prevProps.stopwatch) {
+      this.props.setTimer(this.props.stopwatch ? 0 : this.props.initialTime);
+      this.props.pauseTimer();
+    }
+
+    if (
+      this.props.interval &&
+      this.props.currentTime === 0 &&
+      this.props.automatic
+    ) {
+      setTimeout(this.props.countdownOver, 1000);
     }
   }
 
-  componentWillUnmount() {
-    clearInterval(this.timerInterval);
-  }
-
-  start = () => {
-    this.setState({ running: true });
-    this.timerInterval = setInterval(() => {
-      if (this.state.stopwatchMode) {
-        this.time++;
-      } else {
-        if (this.time > 0) {
-          this.time--;
-          if (this.state.running && this.props.soundOn) {
-            if (this.time === 30) {
-              this.playAudio("beep-triple.mp3");
-            } else if (this.time === 20) {
-              this.playAudio("beep-double.mp3");
-            } else if ([10,3,2,1].includes(this.time)) {
-              this.playAudio("beep-short.mp3")
-            } else if (this.time === 0) {
-              this.playAudio("beep-long.mp3")
-            }
-          }
-        } else {
-          this.stop();
-          if (this.props.automatic) {
-            this.props.countdownOver();
-          }
-          return;
-        }
-      }
-      this.props.updateTime(this.time);
-    }, 1000);
+  runTimer = () => {
+    this.props.decrementTime();
+    this.playAudio();
   };
 
-  stop = () => {
-    this.setState({ running: false });
-    clearInterval(this.timerInterval);
+  start = () => {
+    let timerInterval;
+    if (this.props.stopwatch) {
+      timerInterval = setInterval(this.props.runStopwatch, 1000);
+    } else {
+      timerInterval = setInterval(this.runTimer, 1000);
+    }
+    this.props.startTimer(timerInterval);
   };
 
   reset = () => {
-    if (this.state.stopwatchMode) {
-      this.time = 0;
-    } else {
-      this.time = this.props.time;
+    this.props.setTimer(this.props.stopwatch ? 0 : this.props.initialTime);
+  };
+
+  playAudio() {
+    if (!this.props.interval || !this.props.soundOn) {
+      return;
     }
-    this.props.updateTime(this.time);
-  };
-
-  decrement = () => {
-    this.time--;
-    this.props.updateTime(this.time);
-  };
-
-  increment = () => {
-    this.time++;
-    this.props.updateTime(this.time);
-  };
-
-  playAudio(audio) {
+    let audio;
+    if (this.props.currentTime === 30) {
+      audio = "beep-triple.mp3";
+    } else if (this.props.currentTime === 20) {
+      audio = "beep-double.mp3";
+    } else if ([10, 3, 2, 1].includes(this.props.currentTime)) {
+      audio = "beep-short.mp3";
+    } else if (this.props.currentTime === 0) {
+      audio = "beep-long.mp3";
+    } else {
+      return;
+    }
     this.audio.src = require(`../assets/sounds/${audio}`);
     this.audio.play();
   }
 
-  renderButtons = () => {
-    let buttons = [
+  getButtons = () => {
+    return [
       {
         iconName: "minus-1",
-        cb: this.decrement,
-        disabled: this.state.stopwatchMode
-          ? true
-          : !this.props.active || this.state.running,
+        cb: this.props.decrementTime,
+        disabled: this.disableDecrementIncrementButtons(),
       },
       {
         iconName: "add-button",
-        cb: this.increment,
-        disabled: this.state.stopwatchMode
-          ? true
-          : !this.props.active || this.state.running,
+        cb: this.props.incrementTime,
+        disabled: this.disableDecrementIncrementButtons(),
       },
       {
         iconName: "stop-1",
         cb: this.reset,
-        disabled: this.state.stopwatchMode
-          ? this.time === 0 || this.state.running
-          : !this.props.active ||
-            this.state.running ||
-            this.time === this.props.time,
+        disabled: this.disableResetButton(),
       },
       {
-        iconName: this.state.running
+        iconName: this.props.interval
           ? "pause-button"
           : "movie-player-play-button",
-        cb: this.state.running ? this.stop : this.start,
-        disabled: this.state.stopwatchMode
-          ? false
-          : !this.props.active || this.time == 0,
+        cb: this.props.interval ? this.props.pauseTimer : this.start,
+        disabled: this.disablePlayPauseButton(),
         big: true,
       },
     ];
+  };
 
-    const buttonNodes = buttons.map((button, index) => {
+  render = () => {
+    const buttonNodes = this.getButtons().map((button, index) => {
       return (
         <$Control
           big={button.big}
@@ -145,11 +138,7 @@ class AssistantTimer extends Component {
       );
     });
 
-    return <Fragment>{buttonNodes}</Fragment>;
-  };
-
-  render = () => {
-    return <$Timer>{this.renderButtons()}</$Timer>;
+    return <$Timer>{buttonNodes}</$Timer>;
   };
 }
 
@@ -163,4 +152,23 @@ const $Control = styled.button`
   opacity: ${(props) => (props.disabled ? "0.3" : "1")};
 `;
 
-export default AssistantTimer;
+const mapStateToProps = (state) => {
+  return {
+    automatic: state.assistant.automaticModeOn,
+    stopwatch: state.assistant.stopwatchModeOn,
+    interval: state.assistant.timer.interval,
+    currentTime: state.assistant.timer.time,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setTimer: (time) => dispatch(setTimer(time)),
+    startTimer: (interval) => dispatch(startTimer(interval)),
+    pauseTimer: () => dispatch(pauseTimer()),
+    runStopwatch: () => dispatch(incrementTime()),
+    decrementTime: () => dispatch(decrementTime()),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AssistantTimer);

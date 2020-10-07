@@ -1,21 +1,21 @@
 import { React, Component, styled, colors, connect } from "src/imports/react";
 import { Button, Icon } from "src/imports/components";
-import { manageStopwatch } from "src/store/actions";
+import { runStopwatch, stopStopwatch, resetStopwatch } from "src/store/actions";
 
 class Stopwatch extends Component {
   start = () => {
     const stopwatchInterval = setInterval(() => {
-      this.props.manageStopwatch("run", stopwatchInterval);
+      this.props.runStopwatch(stopwatchInterval);
     }, 10);
   };
 
   stop = () => {
     clearInterval(this.props.stopwatchInterval);
-    this.props.manageStopwatch("stop");
+    this.props.stopStopwatch();
   };
 
   reset = () => {
-    this.props.manageStopwatch("reset");
+    this.props.resetStopwatch();
   };
 
   getMiliseconds = () => {
@@ -116,8 +116,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    manageStopwatch: (time, interval) =>
-      dispatch(manageStopwatch(time, interval)),
+    runStopwatch: (interval) => dispatch(runStopwatch(interval)),
+    stopStopwatch: () => dispatch(stopStopwatch()),
+    resetStopwatch: () => dispatch(resetStopwatch()),
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Stopwatch);

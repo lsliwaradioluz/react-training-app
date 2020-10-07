@@ -7,20 +7,18 @@ const initialState = {
 
 const stopwatchReducer = (state = initialState, action) => {
   switch (action.type) {
-    case actionTypes.MANAGE_STOPWATCH:
-      if (action.payload.action === "run") {
-        return {
-          currentTime: state.currentTime + 1,
-          interval: action.payload.interval,
-        };
-      } else if (action.payload.action === "stop") {
-        return { ...state, interval: null };
-      } else if (action.payload.action === "reset") {
-        return {
-          ...state,
-          currentTime: 0,
-        };
-      }
+    case actionTypes.RUN_STOPWATCH:
+      return {
+        currentTime: state.currentTime + 1,
+        interval: action.interval,
+      };
+    case actionTypes.STOP_STOPWATCH:
+      return { ...state, interval: null };
+    case actionTypes.RESET_STOPWATCH:
+      return {
+        ...state,
+        currentTime: 0,
+      };
     default:
       return state;
   }

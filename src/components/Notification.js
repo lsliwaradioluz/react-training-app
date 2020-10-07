@@ -14,7 +14,7 @@ const Notification = (props) => {
   let notificationDuration = 0
 
   if (props.notification) {
-    notificationDuration = props.notification.length * 100
+    notificationDuration = props.notification.length * 80
     setTimeout(unsetNotification, notificationDuration + 500);
   }
 
@@ -51,7 +51,7 @@ const $Notification = transition.p`
 
 const mapStateToProps = (state) => {
   return {
-    notification: state.notification,
+    notification: state.main.notification,
   };
 };
 

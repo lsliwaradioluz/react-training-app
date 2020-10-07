@@ -14,42 +14,38 @@ import { GET_WORKOUT } from "src/imports/apollo";
 import DefaultLayout from "src/layouts/Default";
 import ExerciseLayout from "src/layouts/Exercise";
 import Timer from "src/components/AssistantTimer";
-import { setNotification, manageAssistant } from "src/store/actions";
+import {
+  setNotification,
+  setControls,
+  resetState,
+  toggleSoundOn,
+  toggleStopwatchMode,
+  toggleAutomaticMode,
+  setTimer,
+} from "src/store/actions";
 
 class WorkoutAssistantPage extends Component {
-  constructor(props) {
-    super(props);
-    this.workout = null;
-    this.state = {
-      controls: null,
-      timer: null,
-      automaticModeOn: false,
-      stopwatchModeOn: false,
-      soundOn: false,
-    };
+  state = {
+    workout: null,
+  };
+
+  componentDidMount() {
+    this.setWorkout();
   }
 
-  async componentDidMount() {
+  setWorkout = async () => {
     const { data } = await apolloClient.query({
       query: GET_WORKOUT,
       variables: {
         id: this.props.match.params.id,
       },
     });
-
-    this.workout = this.getModifiedWorkout(data.workout);
-    if (this.props.assistantState.workoutID === this.workout.id) {
-      const state = this.props.assistantState
-      delete state.workoutID
-      this.setState({ ...state });
-    } else {
-      this.setState({ controls: [0, 0, 0] });
-    }
-  }
-
-  componentWillUnmount() {
-    this.props.manageAssistant({ ...this.state, workoutID: this.workout.id });
-  }
+    this.setState({ workout: this.getModifiedWorkout(data.workout) }, () => {
+      if (this.props.assistantState.workoutID !== this.state.workout.id) {
+        this.props.resetState(this.state.workout.id);
+      }
+    });
+  };
 
   getModifiedWorkout(workout) {
     const modifiedWorkout = cloneDeep(workout);
@@ -106,25 +102,29 @@ class WorkoutAssistantPage extends Component {
   }
 
   getCurrentSection = () => {
-    return this.workout.sections[this.state.controls[2]];
+    return this.state.workout.sections[this.props.assistantState.controls[2]];
   };
 
   getCurrentComplex = () => {
-    return this.getCurrentSection().complexes[this.state.controls[1]];
+    return this.getCurrentSection().complexes[
+      this.props.assistantState.controls[1]
+    ];
   };
 
   getCurrentUnit = () => {
-    return this.getCurrentComplex().units[this.state.controls[0]];
+    return this.getCurrentComplex().units[
+      this.props.assistantState.controls[0]
+    ];
   };
 
   navigate = (controlIndex, newControlValue) => {
-    const controls = [...this.state.controls];
+    const controls = [...this.props.assistantState.controls];
     const getMaxValue = (index) => {
       const maxValues = [
-        this.workout.sections[controls[2]].complexes[controls[1]].units.length -
-          1,
-        this.workout.sections[controls[2]].complexes.length - 1,
-        this.workout.sections.length - 1,
+        this.state.workout.sections[controls[2]].complexes[controls[1]].units
+          .length - 1,
+        this.state.workout.sections[controls[2]].complexes.length - 1,
+        this.state.workout.sections.length - 1,
       ];
       return maxValues[index];
     };
@@ -151,33 +151,18 @@ class WorkoutAssistantPage extends Component {
           controls[i] = 0;
         }
       }
-      this.setState({ controls });
+      this.props.setTimer(this.getCurrentComplex().units[controls[0]].time);
+      this.props.setControls(controls);
     }
   };
 
-  updateTimer = (value) => {
-    this.setState({ timer: value });
-  };
-
-  toggleSoundOn = () => {
-    this.setState((state) => ({ soundOn: !state.soundOn }));
-  };
-
   toggleAutomaticMode = () => {
-    this.setState(
-      (state) => ({ automaticModeOn: !state.automaticModeOn }),
-      () => {
-        this.props.setNotification(
-          this.state.automaticModeOn
-            ? "Tryb automatyczny włączony"
-            : "Tryb automatyczny wyłączony"
-        );
-      }
+    this.props.toggleAutomaticMode();
+    this.props.setNotification(
+      this.props.assistantState.automaticModeOn
+        ? "Tryb automatyczny włączony"
+        : "Tryb automatyczny wyłączony"
     );
-  };
-
-  toggleStopwatchMode = () => {
-    this.setState((state) => ({ stopwatchModeOn: !state.stopwatchModeOn }));
   };
 
   renderVideo = () => {
@@ -188,7 +173,9 @@ class WorkoutAssistantPage extends Component {
       this.getCurrentUnit().exercise.name === "Odpocznij" ||
       this.getCurrentUnit().exercise.name === "Rozpoczynasz nowy blok"
     ) {
-      unit = this.getCurrentComplex().units[this.state.controls[0] + 1];
+      unit = this.getCurrentComplex().units[
+        this.props.assistantState.controls[0] + 1
+      ];
     }
 
     source = unit.exercise.image
@@ -198,7 +185,7 @@ class WorkoutAssistantPage extends Component {
     return (
       <Video
         source={source}
-        key={`${this.state.controls[0]}${this.state.controls[1]}${this.state.controls[2]}`}
+        key={`${this.props.assistantState.controls[0]}${this.props.assistantState.controls[1]}${this.props.assistantState.controls[2]}`}
         opacity="0.2"
       />
     );
@@ -223,9 +210,14 @@ class WorkoutAssistantPage extends Component {
     if (current.distance) repetitions = `${current.distance}m`;
 
     let view = <$Repetitions>{repetitions}</$Repetitions>;
-    if ((current.time && !current.reps) || this.state.stopwatchModeOn) {
+    if (
+      (current.time && !current.reps) ||
+      this.props.assistantState.stopwatchModeOn
+    ) {
       view = (
-        <$Repetitions>{filters.convertSecToMin(this.state.timer)}</$Repetitions>
+        <$Repetitions>
+          {filters.convertSecToMin(this.props.assistantState.timer.time)}
+        </$Repetitions>
       );
     }
 
@@ -239,12 +231,13 @@ class WorkoutAssistantPage extends Component {
     for (
       let i = 0;
       i <
-      this.getCurrentSection().complexes[this.state.controls[1]].units.length;
+      this.getCurrentSection().complexes[this.props.assistantState.controls[1]]
+        .units.length;
       i++
     ) {
       bars.push(
         <$ProgressBar
-          active={i <= this.state.controls[0]}
+          active={i <= this.props.assistantState.controls[0]}
           key={`bar-${i}`}
           onClick={this.navigate.bind(this, 0, i)}
         />
@@ -256,7 +249,7 @@ class WorkoutAssistantPage extends Component {
           <$SectionInfo>{this.getCurrentSection().name} </$SectionInfo>
           <$SectionInfo>
             {`${this.getCurrentComplex().name} (${
-              this.state.controls[1] + 1
+              this.props.assistantState.controls[1] + 1
             }/${numberOfComplexes})`}
           </$SectionInfo>
         </$SectionInfos>
@@ -268,19 +261,19 @@ class WorkoutAssistantPage extends Component {
   renderButtonPanel = () => {
     let buttons = [
       {
-        iconName: this.state.soundOn ? "sound" : "mute",
+        iconName: this.props.assistantState.soundOn ? "sound" : "mute",
         active: false,
-        cb: this.toggleSoundOn,
+        cb: this.props.toggleSoundOn,
       },
       {
         iconName: "login",
-        active: this.state.automaticModeOn,
+        active: this.props.assistantState.automaticModeOn,
         cb: this.toggleAutomaticMode,
       },
       {
         iconName: "counterclockwise",
-        active: this.state.stopwatchModeOn,
-        cb: this.toggleStopwatchMode,
+        active: this.props.assistantState.stopwatchModeOn,
+        cb: this.props.toggleStopwatchMode,
       },
     ];
 
@@ -295,17 +288,13 @@ class WorkoutAssistantPage extends Component {
       <$ButtonPanel>
         <$Buttons>{buttonNodes}</$Buttons>
         <Timer
+          key={this.props.assistantState.controls[0]}
           active={this.getCurrentUnit().time > 0 && !this.getCurrentUnit().reps}
-          automatic={this.state.automaticModeOn}
-          stopwatchMode={this.state.stopwatchModeOn}
-          soundOn={this.state.soundOn}
-          time={this.getCurrentUnit().time}
-          key={this.state.controls[0]}
-          updateTime={this.updateTimer}
+          initialTime={this.getCurrentUnit().time}
           countdownOver={this.navigate.bind(
             this,
             0,
-            this.state.controls[0] + 1
+            this.props.assistantState.controls[0] + 1
           )}
         />
       </$ButtonPanel>
@@ -319,7 +308,7 @@ class WorkoutAssistantPage extends Component {
       </DefaultLayout>
     );
 
-    if (this.state.controls) {
+    if (this.state.workout) {
       view = (
         <ExerciseLayout>
           {this.renderVideo()}
@@ -330,7 +319,7 @@ class WorkoutAssistantPage extends Component {
                 onClick={this.navigate.bind(
                   this,
                   0,
-                  this.state.controls[0] - 1
+                  this.props.assistantState.controls[0] - 1
                 )}
               />
               <$Control
@@ -338,7 +327,7 @@ class WorkoutAssistantPage extends Component {
                 onClick={this.navigate.bind(
                   this,
                   0,
-                  this.state.controls[0] + 1
+                  this.props.assistantState.controls[0] + 1
                 )}
               />
             </$Controls>
@@ -452,8 +441,12 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     setNotification: (notification) => dispatch(setNotification(notification)),
-    manageAssistant: (assistantState) =>
-      dispatch(manageAssistant(assistantState)),
+    setControls: (controls) => dispatch(setControls(controls)),
+    resetState: (workoutID) => dispatch(resetState(workoutID)),
+    toggleSoundOn: () => dispatch(toggleSoundOn()),
+    toggleStopwatchMode: () => dispatch(toggleStopwatchMode()),
+    toggleAutomaticMode: () => dispatch(toggleAutomaticMode()),
+    setTimer: (time) => dispatch(setTimer(time)),
   };
 };
 

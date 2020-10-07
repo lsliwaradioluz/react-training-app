@@ -1,5 +1,13 @@
 import * as actionTypes from "src/store/actionTypes/stopwatch";
 
-export const manageStopwatch = (action, interval) => {
-  return { type: actionTypes.MANAGE_STOPWATCH, payload: { action, interval } };
+export const runStopwatch = (interval) => {
+  return { type: actionTypes.RUN_STOPWATCH, interval };
+};
+
+export const stopStopwatch = () => {
+  return { type: actionTypes.STOP_STOPWATCH };
+};
+
+export const resetStopwatch = () => {
+  return { type: actionTypes.RESET_STOPWATCH };
 };

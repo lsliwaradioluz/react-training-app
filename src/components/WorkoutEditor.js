@@ -17,6 +17,7 @@ import {
   Modal,
 } from "src/imports/components";
 import Layout from "src/layouts/Login";
+import Draggable from "src/components/Draggable";
 import Subheader from "src/components/WorkoutEditor/Subheader";
 import WorkoutSection from "src/components/WorkoutSection";
 import DatePicker from "src/components/WorkoutEditor/DatePicker";
@@ -26,6 +27,12 @@ import SaveButtons from "src/components/WorkoutEditor/SaveButtons";
 import UnitEditor from "src/components/WorkoutEditor/UnitEditor";
 import { GET_USER, GET_WORKOUT, GET_FAMILIES } from "src/imports/apollo";
 import { setNotification } from "src/store/actions";
+
+const $ArrayElement = styled.p`
+  text-align: center;
+  border: 1px solid white;
+  padding: 1rem;
+`;
 
 class WorkoutEditor extends Component {
   constructor(props) {
@@ -41,7 +48,25 @@ class WorkoutEditor extends Component {
       editedUnitCoordinates: null,
       workoutData: null,
     };
+    this.myArray = [1, 2, 3, 4, 5];
   }
+
+  renderMyArray = () => {
+    const nodes = this.myArray.map((element, index) => {
+      return <$ArrayElement key={index}>{element}</$ArrayElement>;
+    });
+
+    return (
+      <Draggable
+        value={this.myArray}
+        onInput={() => {
+          console.log("input");
+        }}
+      >
+        {nodes}
+      </Draggable>
+    );
+  };
 
   async componentDidMount() {
     const { data: userData } = await apolloClient.query({
@@ -70,7 +95,7 @@ class WorkoutEditor extends Component {
     this.previousWorkouts = [...userData.user.workouts];
 
     if (this.props.workoutToCopy) {
-      this.previousWorkouts.unshift(this.props.workoutToCopy)
+      this.previousWorkouts.unshift(this.props.workoutToCopy);
     }
 
     if (this.props.edit) {
@@ -397,6 +422,7 @@ class WorkoutEditor extends Component {
     if (this.state.user) {
       view = (
         <Fragment>
+          {this.renderMyArray()}
           <Header edit={this.props.edit} username={this.state.user.fullname} />
           <DatePicker
             workoutData={this.state.workoutData}
@@ -424,7 +450,7 @@ class WorkoutEditor extends Component {
 
 const $Layout = styled(Layout)`
   padding-bottom: 0;
-`
+`;
 
 const $SectionButtons = styled.div`
   display: flex;

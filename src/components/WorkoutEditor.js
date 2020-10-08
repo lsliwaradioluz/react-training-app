@@ -48,25 +48,7 @@ class WorkoutEditor extends Component {
       editedUnitCoordinates: null,
       workoutData: null,
     };
-    this.myArray = [1, 2, 3, 4, 5];
   }
-
-  renderMyArray = () => {
-    const nodes = this.myArray.map((element, index) => {
-      return <$ArrayElement key={index}>{element}</$ArrayElement>;
-    });
-
-    return (
-      <Draggable
-        value={this.myArray}
-        onInput={() => {
-          console.log("input");
-        }}
-      >
-        {nodes}
-      </Draggable>
-    );
-  };
 
   async componentDidMount() {
     const { data: userData } = await apolloClient.query({
@@ -422,7 +404,6 @@ class WorkoutEditor extends Component {
     if (this.state.user) {
       view = (
         <Fragment>
-          {this.renderMyArray()}
           <Header edit={this.props.edit} username={this.state.user.fullname} />
           <DatePicker
             workoutData={this.state.workoutData}

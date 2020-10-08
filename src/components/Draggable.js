@@ -4,15 +4,15 @@ class Draggable extends Component {
   constructor(props) {
     super(props);
     this.draggableRef = React.createRef();
-    this.touchStart = null
-    this.moveLength = {}
-    this.movingElement = null
-    this.movingElementIndex = null
-    this.nextSibling = null
-    this.previousSibling = null
-    this.mousedown = false
-    this.moveCount = 0
-    this.movingElementSiblings = null
+    this.touchStart = null;
+    this.moveLength = {};
+    this.movingElement = null;
+    this.movingElementIndex = null;
+    this.nextSibling = null;
+    this.previousSibling = null;
+    this.mousedown = false;
+    this.moveCount = 0;
+    this.movingElementSiblings = null;
   }
 
   animateElement(element) {
@@ -27,23 +27,20 @@ class Draggable extends Component {
       sibling.style.transform = "";
     }
     this.movingElement.classList.remove("moving");
-    this.movingmovingElementIndex = null
-    this.movingElement = null
-    this.nextSibling = null
-    this.previousSibling = null
-    this.moveLength = {}
-    this.moveCount = 0
-    this.movingElementSiblings = null
+    this.movingmovingElementIndex = null;
+    this.movingElement = null;
+    this.nextSibling = null;
+    this.previousSibling = null;
+    this.moveLength = {};
+    this.moveCount = 0;
+    this.movingElementSiblings = null;
     document.querySelector("html").style.overflow = "auto";
-    this.draggableRef.current.removeEventListener("touchmove", this.onMove, { passive: true })
-    this.draggableRef.current.removeEventListener("touchend", this.onEnd, { passive: true })
   }
 
   moveElement() {
     const valueCopy = cloneDeep(this.props.value);
     const element = valueCopy[this.movingElementIndex];
-    const newElementIndex =
-      this.movingElementIndex + this.moveCount;
+    const newElementIndex = this.movingElementIndex + this.moveCount;
     valueCopy.splice(this.movingElementIndex, 1);
     valueCopy.splice(newElementIndex, 0, element);
     this.props.onInput(valueCopy);
@@ -77,12 +74,12 @@ class Draggable extends Component {
         this.movingElementIndex - 1
       ];
     } else if (this.moveCount < 0) {
-      this.nextSibling =
-        this.movingElementSiblings[this.movingElementIndex + this.moveCount];
-      this.previousSibling =
-        this.movingElementSiblings[
-          this.movingElementIndex - 1 + this.moveCount
-        ];
+      this.nextSibling = this.movingElementSiblings[
+        this.movingElementIndex + this.moveCount
+      ];
+      this.previousSibling = this.movingElementSiblings[
+        this.movingElementIndex - 1 + this.moveCount
+      ];
     }
   }
 
@@ -93,9 +90,7 @@ class Draggable extends Component {
     ) {
       return;
     }
-    event.stopPropagation()
-    this.draggableRef.current.addEventListener("touchmove", this.onMove, { passive: true })
-    this.draggableRef.current.addEventListener("touchend", this.onEnd, { passive: true })
+    event.stopPropagation();
 
     if (event.target === this.draggableRef.current) {
       return;
@@ -123,7 +118,9 @@ class Draggable extends Component {
     }
 
     this.nextSibling = this.movingElementSiblings[this.movingElementIndex + 1];
-    this.previousSibling = this.movingElementSiblings[this.movingElementIndex - 1];
+    this.previousSibling = this.movingElementSiblings[
+      this.movingElementIndex - 1
+    ];
 
     if (this.props.onDragging) {
       this.props.onDragging();
@@ -131,11 +128,15 @@ class Draggable extends Component {
   };
 
   onMove = (event) => {
-    const movingElementTop = this.movingElement.getBoundingClientRect()
-      .top;
+    if (!this.movingElement) {
+      return;
+    }
+
+    event.stopPropagation();
+
+    const movingElementTop = this.movingElement.getBoundingClientRect().top;
     const movingElementBottom =
-      movingElementTop +
-      this.movingElement.getBoundingClientRect().height;
+      movingElementTop + this.movingElement.getBoundingClientRect().height;
     let nextSiblingBottom, previousSiblingTop;
 
     if (this.nextSibling) {
@@ -144,10 +145,9 @@ class Draggable extends Component {
         this.nextSibling.getBoundingClientRect().height;
     }
     if (this.previousSibling) {
-      previousSiblingTop = this.previousSibling.getBoundingClientRect()
-        .top;
+      previousSiblingTop = this.previousSibling.getBoundingClientRect().top;
     }
-    
+
     if (event.type === "touchmove") {
       this.moveLength = {
         vertical: event.touches[0].screenY - this.touchStart.vertical,
@@ -159,11 +159,9 @@ class Draggable extends Component {
         horizontal: event.screenX - this.touchStart.horizontal,
       };
     }
-    
+
     this.movingElement.style.transform = `translate(${
-      this.moveLength.horizontal < 0
-        ? this.moveLength.horizontal
-        : 0
+      this.moveLength.horizontal < 0 ? this.moveLength.horizontal : 0
     }px, ${this.moveLength.vertical}px)`;
 
     if (this.nextSibling && movingElementBottom >= nextSiblingBottom) {
@@ -177,14 +175,13 @@ class Draggable extends Component {
         }px)`;
       }
 
-      this.moveCount += 1
-      this.setSiblings()
+      this.moveCount += 1;
+      this.setSiblings();
     }
 
     if (this.previousSibling && movingElementTop <= previousSiblingTop) {
       this.animateElement(this.previousSibling);
-      const previousSiblingTransform = this.previousSibling.style
-        .transform;
+      const previousSiblingTransform = this.previousSibling.style.transform;
       if (previousSiblingTransform) {
         this.previousSibling.style.transform = "";
       } else {
@@ -192,14 +189,18 @@ class Draggable extends Component {
           previousSiblingTransform + this.movingElement.offsetHeight
         }px)`;
       }
-      
-      this.moveCount -= 1
-      this.setSiblings()
-    }
 
+      this.moveCount -= 1;
+      this.setSiblings();
+    }
   };
 
   onEnd = (event) => {
+    if (!this.movingElement) {
+      return;
+    }
+
+    event.stopPropagation();
     if (this.moveLength.horizontal < -100) {
       this.deleteElement();
     } else if (this.moveCount != 0) {
@@ -219,6 +220,8 @@ class Draggable extends Component {
         className="draggable"
         ref={this.draggableRef}
         onTouchStart={this.onStart}
+        onTouchMove={this.onMove}
+        onTouchEnd={this.onEnd}
       >
         {this.props.children}
       </$Draggable>

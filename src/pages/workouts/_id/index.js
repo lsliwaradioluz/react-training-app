@@ -76,7 +76,10 @@ class WorkoutPage extends Component {
           },
         },
       });
-      if (this.props.workoutToPair.id === data.updateWorkout.id) {
+      if (
+        this.props.workoutToPair &&
+        this.props.workoutToPair.id === data.updateWorkout.id
+      ) {
         this.props.addEntryToDB("workoutToPair", {
           ...data.updateWorkout,
           user: this.props.workoutToPair.user,

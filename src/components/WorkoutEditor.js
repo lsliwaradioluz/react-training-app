@@ -139,7 +139,7 @@ class WorkoutEditor extends Component {
   };
 
   copyToClipboard = (type, content) => {
-    const copiedContent = deleteKeys(cloneDeep(content), ["feedback"])
+    const copiedContent = deleteKeys(cloneDeep(content), ["four"])
     this.setState({
       clipboard: {
         type,

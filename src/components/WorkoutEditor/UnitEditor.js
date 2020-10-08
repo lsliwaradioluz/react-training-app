@@ -18,6 +18,7 @@ class UnitEditor extends Component {
       : "",
     exercise: this.props.unit.exercise || "",
     remarks: this.props.unit.remarks || "",
+    feedback: this.props.unit.feedback || "",
     sets: this.props.unit.sets || 0,
     reps: this.props.unit.reps || 0,
     time: this.props.unit.time || 0,

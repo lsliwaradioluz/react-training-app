@@ -57,7 +57,7 @@ class PreviousWorkouts extends Component {
     let previousWorkoutHeader
 
     if (previousWorkout.user) {
-      previousWorkoutHeader = `Treningu użytkownika ${previousWorkout.user.username}`
+      previousWorkoutHeader = `Trening użytkownika ${previousWorkout.user.username}`
     } else {
       previousWorkoutHeader = `${filters.getDayName(
         previousWorkout.scheduled

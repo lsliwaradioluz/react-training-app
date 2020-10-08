@@ -58,10 +58,7 @@ class Users extends Component {
       const fitsFilter = `${user.fullname}${user.username}`
         .toLowerCase()
         .includes(this.state.filter.toLowerCase().trim());
-      const isCopiedOrPaired =
-        this.props.workoutToCopy && user.username === this.props.workoutToCopy.user.username ||
-        this.props.workoutToPair && user.username === this.props.workoutToPair.user.username;
-      return fitsActive && fitsFilter && !isCopiedOrPaired
+      return fitsActive && fitsFilter
     });
 
     let userTabs = <p>Brak podopiecznych spełniających podane kryteria</p>;
@@ -72,7 +69,7 @@ class Users extends Component {
           <UserTab
             user={user}
             key={index}
-            pathname={this.props.history.location.pathname}
+            history={this.props.history}
             onUserArchive={this.getUsers}
           />
         );

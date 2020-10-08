@@ -75,9 +75,31 @@ const UserTab = (props) => {
     return buttons;
   };
 
+  const isDisabled = () => {
+    return (
+      (props.workoutToCopy &&
+        props.user.id === props.workoutToCopy.user.id) ||
+      (props.workoutToPair &&
+        props.user.id === props.workoutToPair.user.id)
+    );
+  };
+
+  const navigate = () => {
+    if (isDisabled()) {
+      const notification =
+        props.workoutToCopy && props.workoutToCopy.user.id === props.user.id
+          ? "Kopiujesz już trening tego użytkownika!"
+          : "Parujesz już trening tego użytkownika!";
+      props.setNotification(notification);
+      return;
+    } else {
+      props.history.push(`${props.history.location.pathname}/${props.user.id}`);
+    }
+  };
+
   return (
     <$UserTab>
-      <$UserData to={`${props.pathname}/${props.user.id}`}>
+      <$UserData onClick={navigate} disabled={isDisabled()}>
         <$Avatar
           url={props.user.image && props.user.image.url}
           height={50}
@@ -108,12 +130,13 @@ const $UserTab = styled.div`
   }
 `;
 
-const $UserData = styled(NavLink)`
+const $UserData = styled.div`
   display: flex;
   width: 100%;
   @media (min-width: 1024px) {
     flex-direction: column;
   }
+  opacity: ${(props) => (props.disabled ? 0.5 : 1)};
 `;
 
 const $Avatar = styled(Avatar)`
@@ -148,6 +171,8 @@ const $ContextMenu = styled(ContextMenu)`
 const mapStateToProps = (state) => {
   return {
     coach: state.main.user,
+    workoutToCopy: state.workouts.workoutToCopy,
+    workoutToPair: state.workouts.workoutToPair,
   };
 };
 

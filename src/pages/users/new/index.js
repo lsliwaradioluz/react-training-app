@@ -13,10 +13,10 @@ import { Header, Input, Button } from "src/imports/components";
 
 class newUserPage extends Component {
   state = {
-    fullname: "Piotr Stolarczyk",
-    email: "piotr@gmail.com",
-    password: "123456",
-    repeatPassword: "123456",
+    fullname: "",
+    email: "",
+    password: "",
+    repeatPassword: "",
     user: this.props.coach.id,
     admin: false,
   };
@@ -26,28 +26,44 @@ class newUserPage extends Component {
     this.setState({ [key]: newValue });
   };
 
-  createUser = async () => {
+  passwordsMatch = () => {
+    return this.state.password === this.state.repeatPassword
+  }
+
+  createInput = () => {
     const input = { ...this.state };
     delete input.repeatPassword;
+    return input
+  }
+
+  updateUsersCache = (cache, newUser) => {
+    const { users } = cloneDeep(
+      cache.readQuery({
+        query: GET_USERS,
+        variables: { id: this.props.coach.id },
+      })
+    );
+
+    apolloClient.writeQuery({
+      query: GET_USERS,
+      variables: { id: this.props.coach.id },
+      data: { users: [...users, newUser] },
+    });
+  }
+
+  createUser = async () => {
+    if (!this.passwordsMatch()){
+      this.props.setNotification("Podane hasła nie są takie same!")
+      return
+    }
 
     try {
       await apolloClient.mutate({
         mutation: REGISTER,
-        variables: { input },
+        variables: { input: this.createInput() },
         update: (cache, { data: { register } }) => {
           try {
-            const { users } = cloneDeep(
-              cache.readQuery({
-                query: GET_USERS,
-                variables: { id: this.props.coach.id },
-              })
-            );
-
-            apolloClient.writeQuery({
-              query: GET_USERS,
-              variables: { id: this.props.coach.id },
-              data: { users: [...users, register.user] },
-            });
+            this.updateUsersCache(cache, register.user)
           } catch (err) {
             console.log(err);
           }

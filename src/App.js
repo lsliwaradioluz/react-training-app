@@ -29,6 +29,7 @@ import EditFamilyPage from "src/pages/exercises/_id/edit-family";
 import WorkoutsPage from "src/pages/workouts/index";
 import WorkoutPage from "src/pages/workouts/_id/index";
 import UsersPage from "src/pages/users/index";
+import newUserPage from "src/pages/users/new/index";
 import UserPage from "src/pages/users/_id/index";
 import SettingsPage from "src/pages/settings/index";
 import ChangePasswordPage from "src/pages/settings/change-password/index";
@@ -99,6 +100,7 @@ class App extends Component {
             component={WorkoutAssistantPage}
           />
           <Route exact path="/users" component={UsersPage} />
+          <Route exact path="/users/new" component={newUserPage} />
           <Route exact path="/users/:id" component={UserPage} />
           <Route exact path="/settings" component={SettingsPage} />
           <Route

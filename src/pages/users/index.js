@@ -4,7 +4,8 @@ import {
   styled,
   connect,
   apolloClient,
-  Fragment,
+  Fragment, 
+  NavLink,
 } from "src/imports/react";
 import DefaultLayout from "src/layouts/Default";
 import {
@@ -70,7 +71,7 @@ class Users extends Component {
             user={user}
             key={index}
             history={this.props.history}
-            onUserArchive={this.getUsers}
+            refetchUsers={this.getUsers}
           />
         );
       });
@@ -98,9 +99,9 @@ class Users extends Component {
         <Fragment>
           <Header>
             Podopieczni
-            <button type="button" onClick={this.toggleShowInviteUser}>
+            <NavLink to="users/new">
               <$Icon name="plus" />
-            </button>
+            </NavLink>
           </Header>
           <$Caption>
             Dotknij karty podopiecznego, by zobaczyć jego treningi. Jeżeli

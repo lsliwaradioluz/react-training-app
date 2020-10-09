@@ -1,5 +1,6 @@
 mutation($id: ID!) {
   deleteUser(id: $id) {
+    id
     username
     fullname
     email

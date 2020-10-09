@@ -25,9 +25,9 @@ export const BottomNavigation = (props) => {
             <Icon name="gymnast" />
             <$Caption>Ćwiczenia</$Caption>
           </$BottomLink>
-          {/* <$BottomLink to="/cardio">
+          <$BottomLink to="/cardio">
             <Icon name="cardiogram" />
-          </$BottomLink> */}
+          </$BottomLink>
           <$BottomLink to="/workouts">
             <Icon name="menu" />
             <$Caption>Treningi</$Caption>

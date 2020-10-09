@@ -2,7 +2,6 @@ import {
   React,
   styled,
   colors,
-  NavLink,
   apolloClient,
   connect,
   cloneDeep,
@@ -26,7 +25,7 @@ const UserTab = (props) => {
           ? "Podopieczny został przeniesiony do archiwum."
           : "Podopieczny znów jest aktywny.";
         props.setNotification(message);
-        props.onUserArchive();
+        props.refetchUsers();
       })
       .catch((err) => console.log(err));
   };
@@ -37,22 +36,30 @@ const UserTab = (props) => {
         mutation: DELETE_USER,
         variables: { id: props.user.id },
         update: (cache, { data: { deleteUser } }) => {
-          const { users } = cloneDeep(
-            cache.readQuery({
+          try {
+            const { users } = cloneDeep(
+              cache.readQuery({
+                query: GET_USERS,
+                variables: { id: props.coach.id },
+              })
+            );
+
+            apolloClient.writeQuery({
               query: GET_USERS,
               variables: { id: props.coach.id },
-            })
-          );
-
-          this.client.writeQuery({
-            query: GET_USERS,
-            data: { users: users.filter((user) => user.id !== deleteUser.id) },
-          });
+              data: {
+                users: users.filter((user) => user.id !== deleteUser.id),
+              },
+            });
+          } catch (err) {
+            console.log(err);
+          }
         },
       });
-
+      props.refetchUsers()
       props.setNotification("Podopieczny usunięty pomyślnie");
     } catch (err) {
+      console.log(err);
       props.setNotification("Wystąpił błąd. Sprawdź połączenie z Internetem");
     }
   };
@@ -77,10 +84,8 @@ const UserTab = (props) => {
 
   const isDisabled = () => {
     return (
-      (props.workoutToCopy &&
-        props.user.id === props.workoutToCopy.user.id) ||
-      (props.workoutToPair &&
-        props.user.id === props.workoutToPair.user.id)
+      (props.workoutToCopy && props.user.id === props.workoutToCopy.user.id) ||
+      (props.workoutToPair && props.user.id === props.workoutToPair.user.id)
     );
   };
 

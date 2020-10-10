@@ -1,8 +1,7 @@
-import { React, colors, styled } from "src/imports/react";
+import { React, colors, styled, transition } from "src/imports/react";
 import { Icon } from "src/imports/components";
 
 const Input = (props) => {
-  let label = null;
   let icon = null;
   let deleteButton = null;
 
@@ -11,14 +10,11 @@ const Input = (props) => {
   const clearInput = () => {
     inputRef.current.value = "";
     const event = {
-      target: inputRef.current
-    }
-    props.onChange(event)
+      target: inputRef.current,
+    };
+    props.onChange(event);
   };
 
-  if (props.value && props.value.length > 0 && !props.hideLabel) {
-    label = <$Label>{props.placeholder}</$Label>;
-  }
   if (props.search) {
     icon = <$Icon name="search" color={colors.faded} />;
   }
@@ -29,10 +25,16 @@ const Input = (props) => {
       </$DeleteButton>
     );
   }
-
+  
   return (
     <$InputContainer className={props.className}>
-      {label}
+      <$Label
+        in={Boolean(props.value) && props.value.length > 0 && !props.hideLabel}
+        timeout={500}
+        unmountOnExit
+      >
+        {props.placeholder}
+      </$Label>
       {icon}
       {deleteButton}
       <$Input
@@ -55,12 +57,25 @@ const $InputContainer = styled.div`
   transition: margin 0.3s;
 `;
 
-const $Label = styled.label`
+const $Label = transition.label`
   position: absolute;
   top: -3px;
   font-weight: 500;
   font-size: 10px;
   color: ${colors.faded};
+  transition: all .5s;
+  &:enter {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  &:enter-active {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  &:exit-active {
+    transform: translateX(100px);
+    opacity: 0;
+  }
 `;
 
 const $Icon = styled(Icon)`

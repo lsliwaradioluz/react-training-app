@@ -26,15 +26,41 @@ class newUserPage extends Component {
     this.setState({ [key]: newValue });
   };
 
-  passwordsMatch = () => {
-    return this.state.password === this.state.repeatPassword
-  }
+  inputsValid = () => {
+    if (
+      !this.state.fullname ||
+      !this.state.email ||
+      !this.state.password ||
+      !this.state.repeatPassword
+    ) {
+      this.props.setNotification("Żadne z pól nie może pozostać puste!");
+      return false;
+    }
+    if (!this.state.fullname.split(" ")[1]) {
+      this.props.setNotification(
+        "Samo imię nie wystarczy, musisz podać nazwisko!"
+      );
+      return false;
+    }
+    if (this.state.password !== this.state.repeatPassword) {
+      this.props.setNotification("Podane hasła nie są takie same!");
+      return false;
+    }
+    return true;
+  };
+
+  createCapitalizedFullname = () => {
+    let [firstName, lastName] = this.state.fullname.split(" ");
+    firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+    lastName = lastName.charAt(0).toUpperCase() + lastName.slice(1);
+    return `${firstName} ${lastName}`;
+  };
 
   createInput = () => {
-    const input = { ...this.state };
+    const input = { ...this.state, fullname: this.createCapitalizedFullname() };
     delete input.repeatPassword;
-    return input
-  }
+    return input;
+  };
 
   updateUsersCache = (cache, newUser) => {
     const { users } = cloneDeep(
@@ -49,12 +75,11 @@ class newUserPage extends Component {
       variables: { id: this.props.coach.id },
       data: { users: [...users, newUser] },
     });
-  }
+  };
 
   createUser = async () => {
-    if (!this.passwordsMatch()){
-      this.props.setNotification("Podane hasła nie są takie same!")
-      return
+    if (!this.inputsValid()) {
+      return;
     }
 
     try {
@@ -63,13 +88,13 @@ class newUserPage extends Component {
         variables: { input: this.createInput() },
         update: (cache, { data: { register } }) => {
           try {
-            this.updateUsersCache(cache, register.user)
+            this.updateUsersCache(cache, register.user);
           } catch (err) {
             console.log(err);
           }
         },
       });
-      this.props.setNotification("Nowy użytkownik dodany pomyślni!");
+      this.props.setNotification("Nowy użytkownik dodany pomyślnie!");
       this.props.history.goBack();
     } catch (err) {
       console.log(err);

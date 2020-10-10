@@ -30,7 +30,7 @@ const Input = (props) => {
     <$InputContainer className={props.className}>
       <$Label
         in={Boolean(props.value) && props.value.length > 0 && !props.hideLabel}
-        timeout={500}
+        timeout={300}
         unmountOnExit
       >
         {props.placeholder}
@@ -63,7 +63,7 @@ const $Label = transition.label`
   font-weight: 500;
   font-size: 10px;
   color: ${colors.faded};
-  transition: all .5s;
+  transition: all .3s;
   &:enter {
     opacity: 0;
     transform: translateX(100px);

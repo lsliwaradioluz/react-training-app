@@ -12,12 +12,12 @@ import { setNotification, setUser } from "src/store/actions/index";
 
 class Login extends Component {
   state = {
-    email: "",
+    identifier: "",
     password: "",
   };
 
-  updateEmail = (event) => {
-    this.setState({ email: event.target.value });
+  updateIdentifier = (event) => {
+    this.setState({ identifier: event.target.value });
   };
 
   updatePassword = (event) => {
@@ -26,7 +26,7 @@ class Login extends Component {
 
   signIn = async () => {
     const input = {
-      identifier: this.state.email.toLowerCase(),
+      identifier: this.state.identifier.toLowerCase(),
       password: this.state.password,
     };
 
@@ -71,10 +71,9 @@ class Login extends Component {
       <AuthLayout>
         <Header>Zaloguj się</Header>
         <Input
-          placeholder="Adres e-mail"
-          type="email"
-          value={this.state.email}
-          onChange={this.updateEmail}
+          placeholder="Nazwa użytkownika"
+          value={this.state.identifier}
+          onChange={this.updateIdentifier}
         />
         <Input
           placeholder="Hasło"

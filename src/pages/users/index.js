@@ -18,14 +18,12 @@ import {
 } from "src/imports/components";
 import { GET_USERS } from "src/imports/apollo";
 import UserTab from "src/components/UserTab";
-import InviteUser from "src/components/InviteUser";
 
 class Users extends Component {
   state = {
     users: null,
     showActive: true,
     filter: "",
-    showInviteUser: false,
   };
 
   getUsers = async () => {
@@ -42,10 +40,6 @@ class Users extends Component {
 
   toggleShowActive = (newValue) => {
     this.setState({ showActive: newValue });
-  };
-
-  toggleShowInviteUser = () => {
-    this.setState((state) => ({ showInviteUser: !state.showInviteUser }));
   };
 
   setFilter = (event) => {
@@ -78,18 +72,6 @@ class Users extends Component {
     }
 
     return <$UserTabs>{userTabs}</$UserTabs>;
-  };
-
-  renderInviteUser = () => {
-    if (!this.state.showInviteUser) {
-      return null;
-    }
-
-    return (
-      <Modal onClick={this.toggleShowInviteUser}>
-        <InviteUser onClose={this.toggleShowInviteUser} />
-      </Modal>
-    );
   };
 
   render() {
@@ -131,7 +113,6 @@ class Users extends Component {
             search
           />
           {this.renderUserTabs()}
-          {this.renderInviteUser()}
         </Fragment>
       );
     }

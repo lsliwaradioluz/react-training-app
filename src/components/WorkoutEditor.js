@@ -29,12 +29,6 @@ import { GET_USER, GET_WORKOUT, GET_FAMILIES } from "src/imports/apollo";
 import { setNotification } from "src/store/actions";
 import deleteKeys from "src/utils/deleteKeys"
 
-const $ArrayElement = styled.p`
-  text-align: center;
-  border: 1px solid white;
-  padding: 1rem;
-`;
-
 class WorkoutEditor extends Component {
   constructor(props) {
     super(props);
@@ -139,7 +133,7 @@ class WorkoutEditor extends Component {
   };
 
   copyToClipboard = (type, content) => {
-    const copiedContent = deleteKeys(cloneDeep(content), ["four"])
+    const copiedContent = deleteKeys(content, ["feedback"])
     this.setState({
       clipboard: {
         type,

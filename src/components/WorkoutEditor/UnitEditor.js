@@ -43,13 +43,19 @@ class UnitEditor extends Component {
   };
 
   changeNumber = (label, value) => {
+    if (this.state[label] === 0 && value < 0) {
+      return;
+    }
+
     let valueToAdd = value;
+
     if (label === "rest") {
       valueToAdd *= 5;
     } else if (label === "distance") {
       valueToAdd *= 100;
     }
-    this.setState({ [label]: +this.state[label] + valueToAdd });
+
+    this.setState((state) => ({ [label]: +state[label] + valueToAdd }));
   };
 
   generateFamiliesOptions = () => {
@@ -94,7 +100,7 @@ class UnitEditor extends Component {
     delete finishedUnit.family;
 
     if (this.props.unit.exercise) {
-      this.props.update(finishedUnit)
+      this.props.update(finishedUnit);
     } else {
       this.props.create(finishedUnit);
     }
@@ -156,14 +162,22 @@ class UnitEditor extends Component {
         <Select
           placeholder="Kategoria"
           options={this.generateFamiliesOptions()}
-          value={this.state.family !== "" ? JSON.stringify(this.state.family) : this.state.family}
+          value={
+            this.state.family !== ""
+              ? JSON.stringify(this.state.family)
+              : this.state.family
+          }
           onChange={this.changeState.bind(this, "family")}
         />
         {this.state.family ? (
           <Select
             placeholder="Ćwiczenie"
             options={this.generateExercisesOptions()}
-            value={this.state.exercise !== "" ? JSON.stringify(this.state.exercise) : this.state.exercise}
+            value={
+              this.state.exercise !== ""
+                ? JSON.stringify(this.state.exercise)
+                : this.state.exercise
+            }
             onChange={this.changeState.bind(this, "exercise")}
           />
         ) : null}
